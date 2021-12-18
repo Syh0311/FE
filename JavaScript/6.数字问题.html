@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <h1>浮点数问题</h1>
+  <h2>浮点数运算误差</h2>
+</body>
+<script>
+  // 原理：0.3 - 0.2 的结果是 0.0999999999999999777，四舍五入后为 0.1
+  console.log(parseFloat((0.3 - 0.2).toFixed(2)) === 0.1);
+  console.log(parseFloat((0.1 + 0.2).toFixed(2)) === 0.1);
+</script>
+
+</html>

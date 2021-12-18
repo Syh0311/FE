@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <h1>两种函数创建方式：</h1>
+  <h2>两种函数提升的区别:</h2>
+</body>
+<script>
+  // // 1.函数表达式创建函数【借助了var的变量提升！】
+  // // 1.1. 使用var关键词
+  // console.log(name1);  //undefined 
+  // console.log(name1);  //name1 is not a function！！！
+  // var name1 = function () {
+  //   console.log('name1');
+  //   return 'name1'
+  // }
+  // console.log(name1());  //name1,name1
+
+  // // 1.2. 使用let关键词【没函数表达式提升了！！】
+  // console.log(name2); //Cannot access 'name2' before initialization，浏览器知道下边let了！！！
+  // let name2 = function () {
+  //   console.log('name2');
+  //   return 'name2'
+  // }
+  // console.log(name2());
+
+  // 2.函数声明创建函数【函数声明提升！！！】
+  console.log(name3());  //name3,name3
+  function name3() {
+    console.log('name3');
+    return 'name3'
+  }
+  console.log(name3());  //name3,name3
+
+  // //3.var进行的函数表达式的变量提升与【函数声明】的提升区别：
+  // // 3.1 var是变量提升；
+  // console.log(name1);  //undefined
+  // console.log(name1);  //name1 is not a function！！！
+  // var name1 = function () {
+  //   console.log('name1');
+  //   return 'name1'
+  // }
+  // // 相当于
+  // var name1
+  // console.log(name1);  //undefined
+  // console.log(name1);  //name1 is not a function！！！
+  // name1 = function () {
+  //   console.log('name1');
+  //   return 'name1'
+  // }
+
+
+  // // 3.2函数声明是整个函数提升！！
+  // console.log(name3());
+  // function name3() {
+  //   console.log('name3');
+  //   return 'name3'
+  // }
+  // // 等于
+  // function name3() {
+  //   console.log('name3');
+  //   return 'name3'
+  // }
+  // console.log(name3());  
+
+</script>
+
+</html>

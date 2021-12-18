@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  function ArrayList() {
+    //1. 属性
+    this.array = []
+
+    //2. 方法
+    // 插入数据
+    ArrayList.prototype.insert = function (item) {
+      this.array.push(item)
+    }
+    //toString
+    ArrayList.prototype.toString = function () {
+      return this.array.join('-')
+      // 【关联：toString() 与 join() 区别？？？】
+    }
+
+    // 3.排序算法
+
+    // 3.1 冒泡排序
+
+    // 3.2 选择排序
+    // 3.3 插入排序
+    // 3.4 希尔排序
+    // 3.5 快速排序
+
+  }
+</script>
+
+</html>

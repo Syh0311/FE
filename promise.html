@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- 文档类型声明标签 告诉浏览器使用哪种HTML版本来显示网页。 -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- character set 字符集 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button>syh</button>
+    <dl>
+        <dt>联系我</dt>
+        <dd>微信</dd>
+        <dd>QQ</dd>
+        <dd>微博</dd>
+        <dd>github</dd>
+    </dl>
+</body>
+<script>
+    let test = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            let name = 's'
+            resolve(name)
+        }, 500);
+    });
+    let test1 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            let name = 'y'
+            resolve(name)
+        }, 500);
+    });
+    let test2 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            let name = 'h'
+            resolve(name)
+        }, 500);
+    });
+    let test3 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            let name = 'ss'
+            resolve(name)
+        }, 500);
+    });
+    test.then(res => {
+            console.log(res)
+            return test1
+        }).then(res => {
+            console.log(res)
+            return test3
+        }).then(res => {
+            console.log(res)
+            return test2
+        }).then(res => console.log(res))
+        // async function syhAsync() {
+        //     console.log(await test)
+        //     console.log(await test1)
+        //     console.log(await test2)
+        //     console.log(await test3)
+        // }
+        // syhAsync()
+    console.log('xxx');
+</script>
+
+</html>

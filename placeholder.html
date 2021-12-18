@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .wrapper {
+      width: 300px;
+      margin: 100px auto;
+      position: relative;
+    }
+
+    .input {
+      display: inline-block;
+      width: 100%;
+      height: 52px;
+      line-height: 1.5;
+      font-size: 16px;
+      color: #3a3a3a;
+      padding: 8px;
+      border-radius: 4px;
+      outline: 0;
+      border: solid 1px #ccc;
+      box-sizing: border-box;
+      transition: all ease 0.25s;
+    }
+
+    .input:placeholder-shown::placeholder {
+      color: transparent;
+    }
+
+    .input:hover {
+      border-color: #00b7ff;
+    }
+
+    .input:focus {
+      box-shadow: #00b7ff 0 0 3px;
+      border-color: #00b7ff;
+    }
+
+    .label {
+      position: absolute;
+      left: 8px;
+      top: 15px;
+      color: #8f8f8f;
+      padding: 0 2px;
+      pointer-events: none;
+      /* 在label上设置pointer-events:none，穿透。 */
+      /* background: #fff; */
+      transition: all ease 0.8s;
+    }
+
+    .content {
+      position: absolute;
+      left: 8px;
+      top: 15px;
+      color: #000000;
+      padding: 0 2px;
+      pointer-events: none;
+      transition: all ease 0.8s;
+      /* visibility: hidden; */
+      opacity: 0;
+    }
+
+    /* 输入时 placeholder 隐藏 */
+    /* 可以改为点击时显示placeholder！！！！！！！！！ */
+    /* .input:not(:placeholder-shown)~.label,
+    .input:focus~.label {
+      display: none;
+      color: #00b7ff;
+      transform: scale(0.8) translate(0, -33px);
+    } */
+
+    .input:hover~.content,
+    .input:focus~.content {
+      opacity: 1;
+    }
+
+    .input:focus~.label,
+    .input:hover~.label {
+      transform: scale(0.7) translate(0, -33px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <input type="text" class="input" placeholder="邮XXX箱" readonly>
+    <label class="label">手机号</label>
+    <span class="content">18805199999</span>
+  </div>
+</body>
+
+</html>

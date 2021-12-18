@@ -1,0 +1,375 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>拖动事件</title>
+  <script src="https://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+  <style>
+    .s-move-content-outer {
+      border: 1px black solid;
+      width: 200px;
+      height: 200px;
+      position: relative;
+      outline: none;
+      user-select: none;
+      /*overflow:hidden;*/
+      ;
+    }
+
+    .s-move-content-outer:focus .s-show {
+      display: block;
+    }
+
+    /* 移动 */
+    .s-move-content-header {
+      background-color: pink;
+      width: 100%;
+      height: 30px;
+      text-align: center;
+      line-height: 30px;
+    }
+
+    .s-move-content-header:focus .s-show {
+      display: block;
+    }
+
+
+    /* 八个方位的div控制 */
+    .s-move-content-direction {
+      width: 5px;
+      height: 5px;
+      border: 1px black solid;
+      background-color: gray;
+      position: absolute;
+      display: none;
+    }
+
+    /* 八个方位的小手各自的div */
+    .s-move-content-direction-n {
+      cursor: n-resize;
+      left: 50%;
+      top: -7px;
+      margin-left: -4px;
+    }
+
+    .s-move-content-direction-ne {
+      cursor: ne-resize;
+      top: -7px;
+      right: -7px;
+    }
+
+    .s-move-content-direction-e {
+      cursor: e-resize;
+      top: 50%;
+      right: -7px;
+      margin-top: -4px;
+    }
+
+    .s-move-content-direction-se {
+      cursor: se-resize;
+      bottom: -7px;
+      right: -7px;
+    }
+
+    .s-move-content-direction-s {
+      cursor: s-resize;
+      bottom: -7px;
+      left: 50%;
+      margin-left: -4px;
+    }
+
+    .s-move-content-direction-sw {
+      cursor: sw-resize;
+      left: -7px;
+      bottom: -7px;
+    }
+
+    .s-move-content-direction-w {
+      cursor: w-resize;
+      left: -7px;
+      top: 50%;
+      margin-top: -4px;
+    }
+
+    .s-move-content-direction-nw {
+      cursor: nw-resize;
+      left: -7px;
+      top: -7px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="s-move-content-outer" tabIndex="1">
+    <div class="s-move-content-header" tabIndex="1">div1
+      <div class="s-move-content-direction s-show s-move-content-direction-n"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-ne"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-e"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-se"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-s"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-sw"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-w"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-nw"></div>
+    </div>
+
+    <div>内容1</div>
+
+  </div>
+
+  <div class="s-move-content-outer" tabIndex="1">
+    <div class="s-move-content-header" tabIndex="1">div2
+      <div class="s-move-content-direction s-show s-move-content-direction-n"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-ne"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-e"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-se"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-s"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-sw"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-w"></div>
+      <div class="s-move-content-direction s-show s-move-content-direction-nw"></div>
+    </div>
+
+    <div>内容2</div>
+
+  </div>
+
+
+</body>
+
+</html>
+
+<script>
+  //监控页面上所有div点击事件
+  var $BIPanel = $("div[class^='s-move-content-outer']").mousedown(function (e) {
+    var ele = $(this);
+    document.onmousemove = function (e) {
+      addMoveContentControl(ele[0], e);
+    }
+
+  });
+
+  var space = {
+    move: {              // [移动]
+      content: {           // [移动备注框]
+        width: 200,         // 默认div的宽度
+        height: 200,         // 默认div的高度
+        top: 0,          // 默认div的距离头部距离
+        right: 0,          // 默认div的距离右侧距离
+        bottom: 0,          // 默认div的距离底部距离
+        left: 0,          // 默认div的距离左侧距离
+        moveHeight: 30,     // 默认头部高度
+        textareaHeight: 170, // 默认textarea的高度
+        min: 100,        // div宽度高度不能小于min
+        buttomTarget: null,  // 鼠标按下之后的target
+        moveTarget: null     // 鼠标按下之后移动的target
+      }
+    }
+  }
+
+  /**
+   * @para divEle 最大的div
+   * @para e      鼠标事件
+   */
+  function addMoveContentSuper(divEle, e) {
+    // 缩小保护
+    this.min = space.move.content.min;
+
+    // 所有元素
+    this.divEle = divEle;
+    this.textEle = divEle.lastElementChild; // testArea element
+
+    // 最大div的style
+    this.divStyle = this.divEle.style;
+    this.divWidth = this.divStyle.width;
+    this.divHeight = this.divStyle.height;
+    this.divTop = this.divStyle.top;
+    this.divRight = this.divStyle.right;
+    this.divBottom = this.divStyle.bottom;
+    this.divLeft = this.divStyle.left;
+
+    // 头部移动高度
+    this.hreadHeight = space.move.content.moveHeight;
+
+    // textarray的style
+    this.textStyle = this.textEle.style;
+
+    // 鼠标事件event
+    this.e = e;
+    this.x = e.movementX;
+    this.y = e.movementY;
+    this.moveTarget = space.move.content.moveTarget; // 正在移动的target
+
+    // 修改属性的值  
+    // [这里以后就不用再if判断了,就连html里的标签都是js生成的直接用js赋值宽度就行]
+    this.divWidth = (this.divWidth === "") ?
+      space.move.content.width : parseInt(this.divWidth.replace("px", ""));
+
+    this.divHeight = (this.divHeight === "") ?
+      space.move.content.height : parseInt(this.divHeight.replace("px", ""));
+
+    this.divTop = (this.divTop === "") ?
+      space.move.content.top : parseInt(this.divTop.replace("px", ""));
+
+    this.divRight = (this.divRight === "") ?
+      space.move.content.right : parseInt(this.divRight.replace("px", ""));
+
+    this.divBottom = (this.divBottom === "") ?
+      space.move.content.bottom : parseInt(this.divBottom.replace("px", ""));
+
+    this.divLeft = (this.divLeft === "") ?
+      space.move.content.left : parseInt(this.divLeft.replace("px", ""));
+
+  }
+
+  /**
+   * 添加移动框的 移动 && 放大 && 缩小 && 斜拉
+   * 
+   * 元素组织最大一层 div → 移动层 → 八个小方位
+   *                ↓
+   *               textarea
+   * @param  {[divElement]}  divEle [需要移动的div,最外层的div]
+   * @param  {[EventObject]} e      [event type='move']
+   * @return {[void]}   
+   */
+  function addMoveContentControl(divEle, e) {
+    if (e.buttons !== 1) {                               // 当鼠标没有按下则不走方法
+      space.move.content.moveTarget = null;
+      return;
+    } else if (space.move.content.moveTarget === null) {  // 当鼠标按下了,movetarget为空则赋值
+      space.move.content.moveTarget = e.target;        // 这里利用了成员变量
+    }
+    var move = divEle;                                                 // 获取移动元素
+    var direction = divEle.getElementsByClassName("s-move-content-direction");           // 获取所有拉伸的节点
+    switch (space.move.content.moveTarget) {
+      case move: new addMoveContentMove(divEle, e, move); break; // 头部移动
+      case direction[0]: new addMoveContentTop(divEle, e, direction[0]); break; // 上拉伸
+      case direction[1]: new addMoveContentRightTop(divEle, e, direction[1]); break; // 右上拉伸
+      case direction[2]: new addMoveContentRight(divEle, e, direction[2]); break; // 右拉伸
+      case direction[3]: new addMoveContentRightButtom(divEle, e, direction[3]); break; // 右下拉伸
+      case direction[4]: new addMoveContentButtom(divEle, e, direction[4]); break; // 下拉伸
+      case direction[5]: new addMoveContentLeftButtom(divEle, e, direction[5]); break; // 左下拉伸
+      case direction[6]: new addMoveContentLeft(divEle, e, direction[6]); break; // 左上拉伸
+      case direction[7]: new addMoveContentLeftTop(divEle, e, direction[7]); break; // 左上拉伸
+      default: new addMoveContentMove(divEle, e, move); break;
+    }
+  }
+
+  function addMoveContentMove(divEle, e, thisEle) { // 移动
+    addMoveContentSuper.apply(this, arguments);
+    var top = this.divTop + this.y;
+    var left = this.divLeft + this.x;
+    this.divStyle.top = top + "px";
+    this.divStyle.left = left + "px";
+  }
+
+  function addMoveContentTop(divEle, e, thisEle) { // 向上拉伸
+    addMoveContentSuper.apply(this, arguments);
+    var top = this.divTop;
+    var height = this.divHeight + (-this.y);
+    if (height < this.min)
+      height = this.min;
+    else
+      top = this.divTop + this.y;
+    this.divStyle.top = top + "px";
+    this.divStyle.height = height + "px";
+    this.textStyle.height = (height - this.hreadHeight) + "px";
+  }
+
+  function addMoveContentRightTop(divEle, e, thisEle) { // 右上拉伸
+    addMoveContentSuper.apply(this, arguments);
+    var top = this.divTop;
+    var width = this.divWidth + this.x;
+    var height = this.divHeight + (-this.y);
+    if (height < this.min)
+      height = this.min;
+    if (width < this.min)
+      width = this.min;
+    else
+      top = this.divTop + this.y;
+    this.divStyle.top = top + "px";
+    this.divStyle.width = width + "px";
+    this.divStyle.height = height + "px";
+    this.textStyle.height = (height - this.hreadHeight) + "px";
+  }
+
+  function addMoveContentRight(divEle, e, thisEle) {  // 右侧拉伸
+    addMoveContentSuper.apply(this, arguments);
+    var width = this.divWidth + this.x;
+    if (width < this.min)
+      width = this.min;
+    this.divStyle.width = width + "px";
+  }
+
+  function addMoveContentRightButtom(divEle, e, thisEle) { // 右下拉伸
+    addMoveContentSuper.apply(this, arguments);
+    var width = this.divWidth + this.x;
+    var height = this.divHeight + this.y;
+    if (height < this.min)
+      height = this.min;
+    if (width < this.min)
+      width = this.min;
+    this.divStyle.width = width + "px";
+    this.divStyle.height = height + "px";
+    this.textStyle.height = (height - this.hreadHeight) + "px";
+  }
+
+  function addMoveContentButtom(divEle, e, thisEle) { // 向下拉伸
+    addMoveContentSuper.apply(this, arguments);
+    var height = this.divHeight + this.y;
+    if (height < this.min)
+      height = this.min;
+    this.textStyle.height = (height - this.hreadHeight) + "px";
+    this.divStyle.height = height + "px";
+  }
+
+  function addMoveContentLeftButtom(divEle, e, thisEle) { // 左下拉伸
+    addMoveContentSuper.apply(this, arguments);
+    var left = this.divLeft;
+    var width = this.divWidth + (-this.x);
+    var height = this.divHeight + this.y;
+    if (height < this.min)
+      height = this.min;
+    if (width < this.min)
+      width = this.min;
+    else
+      left = this.divLeft + this.x;
+    this.divStyle.width = width + "px";
+    this.divStyle.height = height + "px";
+    this.divStyle.left = left + "px";
+    this.textStyle.height = (height - this.hreadHeight) + "px";
+  }
+
+  function addMoveContentLeft(divEle, e, thisEle) { // 向左拉伸
+    addMoveContentSuper.apply(this, arguments);
+    var left = this.divLeft;
+    var width = this.divWidth + (-this.x);
+    if (width < this.min)
+      width = this.min;
+    else
+      left = this.divLeft + this.x;
+    this.divStyle.left = left + "px";
+    this.divStyle.width = width + "px";
+  }
+
+  function addMoveContentLeftTop(divEle, e, thisEle) { // 左上拉伸
+    addMoveContentSuper.apply(this, arguments);
+    var top = this.divTop;
+    var left = this.divLeft;
+    var width = this.divWidth + (-this.x);
+    var height = this.divHeight + (-this.y);
+    if (height < this.min)
+      height = this.min;
+    else
+      top = this.divTop + this.y;
+    if (width < this.min)
+      width = this.min;
+    else
+      left = this.divLeft + this.x;
+    this.divStyle.top = top + "px";
+    this.divStyle.left = left + "px";
+    this.divStyle.width = width + "px";
+    this.divStyle.height = height + "px";
+    this.textStyle.height = (height - this.hreadHeight) + "px";
+  }
+</script>
