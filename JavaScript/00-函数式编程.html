@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  function memoize(fn) {
+    const cache = {};
+    return function () {
+      console.log(arguments);
+      const key = JSON.stringify(arguments);
+      console.log(key);
+      var value = cache[key];
+      if (!value) {
+        value = [fn.apply(null, arguments)];  // 放在一个数组中，方便应对 undefined，null 等异常情况
+        cache[key] = value;
+      }
+      return value[0];
+    }
+  }
+
+  const fibonacci = memoize(n => n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2));
+  // console.log(fibonacci(4))  // 执行后缓存了 fibonacci(2), fibonacci(3),  fibonacci(4)
+  // console.log(fibonacci(10)) // fibonacci(2), fibonacci(3),  fibonacci(4) 的结果直接从缓存中取出，同时缓存其他的
+  const fib = n => {
+    if (n === 0) {
+      return 0;
+    } else if (n === 1) {
+      return 1;
+    } else {
+      return fib(n - 2) + fib(n - 1);
+    }
+  };
+
+  console.log(fib(10));
+  // console.log(fib(15));
+  // console.log(fib(20));
+  // console.log(fib(25));
+  // console.log(fib(30));
+  console.log(fib(40));
+  // console.log(fib(60));
+
+</script>
+
+</html>
