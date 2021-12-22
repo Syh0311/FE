@@ -1,41 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
+  </head>
 
-<body>
-
-</body>
-<script>
+  <body></body>
+  <script>
     // 队列中使用字典性能更高点
     function Queue() {
-        this.items = []
-        Queue.prototype.fromArray = function (array) {
-            array.forEach(el => this.items.push(el))
-        }
-        Queue.prototype.push = function (el) {
-            this.items.push(el)
-        }
-        Queue.prototype.front = function () {
-            return this.items[0]
-        }
-        Queue.prototype.size = function () {
-            return this.items.length
-        }
-        Queue.prototype.delete = function () {
-            return this.items.shift()
-        }
-        Queue.prototype.isEmpty = function () {
-            return this.items.length == 0
-        }
-        Queue.prototype.toString = function () {
-            return this.items.reduce((a, b) => a + "-" + b)
-        }
+      this.items = [];
+      Queue.prototype.fromArray = function (array) {
+        array.forEach((el) => this.items.push(el));
+      };
+      Queue.prototype.push = function (el) {
+        this.items.push(el);
+      };
+      Queue.prototype.front = function () {
+        return this.items[0];
+      };
+      Queue.prototype.size = function () {
+        return this.items.length;
+      };
+      Queue.prototype.delete = function () {
+        return this.items.shift();
+      };
+      Queue.prototype.isEmpty = function () {
+        return this.items.length == 0;
+      };
+      Queue.prototype.toString = function () {
+        return this.items.reduce((a, b) => a + "-" + b);
+      };
     }
     // let queue = new Queue()
     // queue.push("s")
@@ -48,46 +45,45 @@
     // console.log(queue.isEmpty());
     // 击鼓传花
     function jiGU(array, number) {
-        array = array || ['s', 'y', 'h']
-        number = number || 1
-        let queue = new Queue()
-        // console.log(array, number);
-        queue.fromArray(array)
-        // 第一种思路
-        // let i = 1
-        // while (queue.size() !== 1) {
-        //     if (i = number) {
-        //         i = 1
-        //         queue.delete()
-        //         // return
-        //     } else {
-        //         queue.push(queue.delete())
-        //         i += 1
-        //     }
+      array = array || ["s", "y", "h"];
+      number = number || 1;
+      let queue = new Queue();
+      // console.log(array, number);
+      queue.fromArray(array);
+      // 第一种思路
+      // let i = 1
+      // while (queue.size() !== 1) {
+      //     if (i = number) {
+      //         i = 1
+      //         queue.delete()
+      //         // return
+      //     } else {
+      //         queue.push(queue.delete())
+      //         i += 1
+      //     }
 
-        //     // console.log(i);
-        // }
-        // return queue.front()
+      //     // console.log(i);
+      // }
+      // return queue.front()
 
-        // 另一种思路，从总数上来约束
-        while (queue.size() > 1) {
-            // 3.1 num数字之前的人重新放入到队列末尾
-            for (let i = 0; i < number - 1; i++) {
-                queue.push(queue.delete())
-            };
-            // 3.2 num对应这个人，直接从队列删除
-            queue.delete();
-        };
-        // 4. 获取剩下的那个人
-        // alert(queue.size());
-        var endName = queue.front();
-        console.log("最终剩下的人:" + endName);
-        return"是第"+array.indexOf(endName)+"个人" ;
+      // 另一种思路，从总数上来约束
+      while (queue.size() > 1) {
+        // 3.1 num数字之前的人重新放入到队列末尾
+        for (let i = 0; i < number - 1; i++) {
+          queue.push(queue.delete());
+        }
+        // 3.2 num对应这个人，直接从队列删除
+        queue.delete();
+      }
+      // 4. 获取剩下的那个人
+      // alert(queue.size());
+      var endName = queue.front();
+      console.log("最终剩下的人:" + endName);
+      return "是第" + array.indexOf(endName) + "个人";
     }
     // jiGU(['s', 'y', 'h', 'y'])
-    names = ['诸葛大力', '张伟', '胡一菲', '曾小贤', '关谷神奇'];
+    names = ["诸葛大力", "张伟", "胡一菲", "曾小贤", "关谷神奇"];
     console.log(jiGU(names, 1));
     console.log(jiGU());
-</script>
-
+  </script>
 </html>
