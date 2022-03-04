@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    function Stack() {
+        this.items = []
+        Stack.prototype.push = function (element) {
+            this.items.push(element)
+        }
+        Stack.prototype.pop = function () {
+            return this.items.pop()
+        }
+        Stack.prototype.peek = function () {
+            return this.items[this.items.length - 1]
+        }
+        Stack.prototype.isEmpty = function () {
+            return this.prototype.length == 0
+        }
+        Stack.prototype.toString = function () {
+            return this.items.reduce((a, b) => {
+                return a + " " + b
+            })
+        }
+    }
+    let s = new Stack()
+    // s.push('s')
+    // s.push('Y')
+    // s.push('h')
+    // s.push(19)
+    // console.log(s.toString());
+    // console.log(s);
+    // console.log(s.pop());
+    // console.log(s.peek());
+    // console.log(s.toString());
+
+    // 十进制转二进制
+    function TenToTwo(element) {
+        console.log(element);
+        let el = parseInt(element)
+        let outPut = new Stack()
+        function digui(el) {
+            if (parseInt(el / 2) !== 0) {
+                console.log(parseInt(el / 2));
+                digui(parseInt(el / 2))
+                outPut.push(el % 2)
+            }
+            else {
+                outPut.push(1)
+            }
+        }
+        digui(el)
+        return outPut
+    }
+    // TenToTwo(100)
+    console.log(TenToTwo(100));
+    console.log(TenToTwo(1000));
+    // console.log(ttt.toTwo(100));
+</script>
+
+</html>

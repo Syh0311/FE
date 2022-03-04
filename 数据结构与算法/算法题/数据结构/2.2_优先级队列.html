@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    function PriorityQueue() {
+        this.items = []
+        // 保存优先级,在PriorityQueue中重新定义了一个类
+        function QueueElement(ele, priority) {
+            this.element = ele
+            this.priority = priority
+        }
+        PriorityQueue.prototype.front = function () {
+            console.log("调用了front");  //enqueue中通过PriorityQueue.prototype调用front函数this.items是undefined
+            console.log(this.items);
+            return this.items[0]
+        }
+        PriorityQueue.prototype.size = function () {
+            return this.items.length
+        }
+        PriorityQueue.prototype.delete = function () {
+            return this.items.shift()
+        }
+        PriorityQueue.prototype.isEmpty = function () {
+            console.log("调用了isEmpty");
+            console.log(this.items);
+            return this.items.length == 0
+        }
+        PriorityQueue.prototype.toString = function () {
+            return this.items.reduce((a, b) => a + "-" + b)
+        }
+        PriorityQueue.prototype.enqueue = function (ele, priority) {
+            let queueElement = new QueueElement(ele, priority)
+            // console.log(this.items.length);
+            console.log(PriorityQueue.prototype.front());
+            // if (PriorityQueue.prototype.isEmpty()) { //不能调用
+            if (this.items.length == 0) {
+                this.items.push(queueElement)
+            } else {
+                // 使用for循环比较优先级，需要全部便利，有点慢
+                for (let i = 0; i < this.items.length; i++) {
+                    const el = this.items[i];
+                    if (queueElement.priority < el.priority) {
+                        this.items.splice(i, 0, queueElement)
+                        // this.items.push(queueElement)
+                        return 111   //使用return停止整个函数，要不就添加flag在函数外，使用break，下边再加判断
+                    }
+                    // else放在这大错特错，要比前边所以的都大才能放到最后，需要注意for循环中的if语句的else问题
+                    // else{
+                    //     // this.items.push(queueElement)
+                    // }
+                }
+                this.items.push(queueElement)
+
+            }
+        }
+    }
+
+    let quePriority = new PriorityQueue()
+    quePriority.enqueue('s', 1)
+    quePriority.enqueue('h', 111)
+    quePriority.enqueue('y', 11)
+    quePriority.enqueue('yyy', 1)
+    console.log(quePriority);
+    console.log(quePriority.front());
+
+</script>
+
+</html>

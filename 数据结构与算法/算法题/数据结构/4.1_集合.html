@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>集合</title>
+</head>
+
+<body>
+  <h1>
+    集合常见的实现方式是hash表,
+  </h1>
+  <h1>
+    ES6中已经有了,
+  </h1>
+  <h1>
+    以下写法均没有考虑兼容性
+  </h1>
+</body>
+<script>
+  function SetSyh() {
+    // 属性
+    this.items = {}
+    // 方法
+    SetSyh.prototype.add = function (value) {
+      // 判断是否有此value
+      if (this.has()) return false
+      this.items[value] = value
+      return true
+    }
+    SetSyh.prototype.remove = function (value) {
+      if (!this.has()) return false
+      else {
+        delete this.items.value
+        // delete 操作符用于删除对象的某个属性；如果没有指向这个属性的引用，那它最终会被释放。
+      }
+    }
+    SetSyh.prototype.has = function (value) {
+      return this.items.hasOwnProperty(value)
+      // Object.prototype.hasOwnProperty()
+      // hasOwnProperty() 方法会返回一个布尔值，指示对象自身属性中是否具有指定的属性（也就是，是否有指定的键）。
+    }
+    SetSyh.prototype.clear = function () {
+      this.items = {}
+    }
+    SetSyh.prototype.size = function () {
+      return Object.keys(this.items).length
+      // Object.keys() 方法会返回一个由一个给定对象的自身可枚举属性组成的数组
+      // Object.entries()方法返回一个给定对象自身可枚举属性的键值对数组
+      // Object.values()方法返回一个给定对象自身的所有可枚举属性值的数组
+    }
+    SetSyh.prototype.values = function () {
+      return Object.keys(this.items)
+    }
+  }
+</script>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>手写---Object.create</title>
+  </head>
+  <body>
+    <script>
+      //create的第二个参数
+      function syhCreate(proto) {
+        if (typeof proto !== "object" || typeof proto === null) {
+          throw new Error(`${proto}必须是对象~`);
+        }
+        function Fn() {}
+        Fn.prototype = proto;
+        let sonProto = new Fn();
+        //会arguments类数组转数组
+        // let props = [].slice.call(arguments)[1];//使用slice，能处理类数组
+        let props = [...arguments][1];
+        Object.defineProperties(sonProto, props);
+        return sonProto;
+      }
+      //test
+      function Father() {}
+      let props = {
+        property1: {
+          value: "syh",
+          writable: true,
+        },
+        property2: {
+          value: "Hello",
+          writable: false,
+        },
+      };
+      let sonProto = syhCreate(Father.prototype, props);
+      console.log(sonProto);
+    </script>
+  </body>
+</html>

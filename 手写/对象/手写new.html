@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>手写new</title>
+  </head>
+  <body>
+    new做了什么<br />
+    1. 创建新对象；<br />
+    2. 将对象的__proto__指向构造函数的prototype；<br />
+    3. 构造函数中this赋值为此对象；<br />
+    4. 执行构造函数；<br />
+    5. 如果构造函数本身就返回对象，则返回构造函数中对象，否则返回新对象。<br />
+
+    手写的注意点：<br />
+    1. 判断fn是否为函数，且不能为箭头函数【fn.name】；<br />
+    2. 创建新对象并指派原型时更优雅的做法【Object.create()】;<br />
+    3. 执行构造函数内函数【call/apply】；<br />
+    4. 返回什么，函数本身有非空对象的返回值，则使用该返回值；<br />
+
+    箭头函数不能作为构造函数的原因：<br />
+    1. this指向问题；<br />
+    2.没prototype undefined；<br />
+  </body>
+  <script>
+    const myNew = (fn, ...args) => {
+      //1.判断fn
+      //1.1 传进来的是个函数
+      if (typeof fn !== "function") {
+        throw new Error(`${fn} is not a function`);
+      }
+      //1.2 传进来的不能是箭头函数
+      if (fn.prototype == undefined) {
+        throw new Error(`${fn.name} can not be a arrow function,cause arrow function has no prototype!`);
+      }
+      //步骤1
+      let obj = {};
+      //步骤2
+      // obj.__proto__ = fn.prototype;
+      obj = Object.create(fn.prototype); //更优雅的写法
+      //步骤3、4
+      const result = fn.call(obj, ...args);
+      //步骤5--还要进行判断
+      if (typeof result === "object" && typeof result !== null) {
+        return result;
+      } else {
+        return obj;
+      }
+    };
+
+    //测试
+    function testFn(name) {
+      this.name = name;
+    }
+    const arrowFn = (name) => {
+      this.name = name;
+    };
+    console.log(arrowFn.prototype); //undefined
+    const myObj = myNew(testFn, "syh");
+    console.log(myObj);
+    console.log(myObj instanceof testFn); //true
+    console.log(myNew(arrowFn, "sy"));
+  </script>
+</html>
