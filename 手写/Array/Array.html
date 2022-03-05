@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="./array.js"></script>
+    <!-- <script src="../dist/array.js"></script> -->
+    <script>
+      const arr = SArray.from([1, 2, 3, 4]);
+      // console.log(arr.first());
+      // console.log(arr.last());
+      // arr.syhForEach((el) => console.log(el));
+
+      // console.log(arr.map((el) => el * 2));
+      // console.log(arr.syhMap((el) => el * 2));
+
+      // console.log(arr.find((el) => el > 5));
+      // console.log(arr.syhFind((el) => el > 5));
+      // let i = 0,
+      //   j = 0;
+      // console.log(
+      //   arr.reduce((a, b) => {
+      //     i++;
+      //     return a + b;
+      //   }, 3)
+      // );
+      // console.log(
+      //   arr.syhReduce((a, b) => {
+      //     j++;
+      //     return a + b;
+      //   }, 3)
+      // );
+      // console.log([i, j]);
+
+      let arr2 = SArray.from([0, 1, 2, [[[3, 4]]]]);
+      console.log(arr2.syhFlat(999999999));
+      console.log(arr2.flat(3));
+    </script>
+  </body>
+</html>
