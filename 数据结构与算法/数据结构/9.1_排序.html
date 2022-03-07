@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  真正的面试题的话，给定了数组，需要直接对数组进行操作
+</body>
+<script>
+  function ArrayList() {
+    //1. 属性
+    this.array = []
+
+    //2. 方法
+
+    //2.1 插入数据
+    ArrayList.prototype.insert = function (item) {
+      this.array.push(item)
+    }
+
+    //2.2 toString
+    ArrayList.prototype.toString = function () {
+      // return 'ssss'  //alert下默认调用toString方法！！！
+      return this.array.join('-')
+      // 【关联：toString() 与 join() 区别？？？】
+    }
+
+    // 2.3 swap 
+    ArrayList.prototype.swap = function (a, b) {
+      [this.array[a], this.array[b]] = [this.array[b], this.array[a]]//数组的解构赋值
+    }
+
+    // 3.排序算法
+
+    // 3.1 冒泡排序---【最大的在前边】
+    ArrayList.prototype.bubbleSort = function () {
+      // let j = 1
+      for (let j = 1; j < this.array.length; j++) {
+        for (let i = 0; i < this.array.length - j; i++) {
+          const pre = this.array[i],
+            next = this.array[i + 1]
+          if (pre < next) {
+            this.swap(i, i + 1)
+          } else {
+            console.log(`${pre}比较大！`);
+          }
+        }
+      }
+      return this.array
+    }
+
+    // 3.2 选择排序-先选出来最小的，放到最前边
+    ArrayList.prototype.selectSort = function () {
+
+      for (let i = 0; i < this.array.length; i++) {
+        index = i
+        for (let j = i + 1; j < this.array.length; j++) {
+          if (this.array[j] > this.array[index]) {
+            index = j
+          } else {
+            console.log(`${this.array[j]}更大！！`);
+          }
+        }
+        this.array.splice(i, 0, this.array.splice(index, 1))
+      }
+      return this.array
+    }
+
+    // 3.3 插入排序-简单排序中效率最高的
+    ArrayList.prototype.insertionSort = function () {
+
+    }
+
+    // 3.4 希尔排序
+
+
+    // 3.5 快速排序
+    // 快速排序
+    // 1. 选择枢纽
+    ArrayList.prototype.medium = function (left, right) {
+      // 1. 取出中间的位置
+      var center = Math.floor((left + right) / 2);
+
+      // 2. 判断大小，并且进行交换
+      if (this.array[left] > this.array[center]) {
+        this.swap(left, center);
+      };
+      if (this.array[left] > this.array[right]) {
+        this.swap(left, right);
+      };
+      if (this.array[center] > this.array[right]) {
+        this.swap(center, right);
+      };
+
+      // 3.将center换到right-1的位置
+      this.swap(center, right - 1)
+
+      return this.array[right - 1]
+    };
+
+    // 2. 快速排序的实现
+    ArrayList.prototype.quickSort = function () {
+      this.quick(0, this.array.length - 1);
+      //为啥要-1？？？  -1才是最右边的，傻了！！！
+
+    };
+
+    ArrayList.prototype.quick = function (left, right) {
+      // 1. 结束条件
+      if (left >= right) {
+        return
+      };
+
+      // 2. 获取枢纽
+      var pivot = this.medium(left, right);
+
+      // 3. 定义变量，用于当前找到的位置
+      var i = left;
+      var j = right - 1;
+
+      // 4. 开始进行交换
+      while (i < j) {
+        while (this.array[++i] < pivot) { };
+        while (this.array[--j] > pivot) { };
+        if (i < j) {
+          this.swap(i, j);
+        } else {
+          break;
+        };
+
+      }
+      // 5. 将枢纽放置在正确的位置，i的位置
+      this.swap(i, right - 1);
+
+      // 6. 分而治之
+      this.quick(left, i - 1);
+      this.quick(i + 1, right);
+    };
+
+
+  }
+
+  //测试类
+  let list = new ArrayList()
+
+  //插入元素
+  list.insert(66)
+  list.insert(88)
+  list.insert(12)
+  list.insert(87)
+  list.insert(100)
+  list.insert(5)
+  list.insert(566)
+  list.insert(23)
+
+  // list.bubbleSort()
+  // list.selectSort()
+  list.quickSort()
+  console.log(list.toString());
+</script>
+
+</html>

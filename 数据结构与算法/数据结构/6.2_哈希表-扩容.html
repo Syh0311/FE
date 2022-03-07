@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>哈希表</title>
+</head>
+
+<body>
+  <h1>在6.1的基础上添加了resize方法，并将此方法添加到put和remove方法中</h1>
+</body>
+<script>
+  function HashTable() {
+    // 基础属性
+    this.Storage = []
+    this.elementCount = 0  //元素个数, 用来计算装载因子(loadFactor)
+    this.limit = 10   //哈希表长度
+    // 哈希函数，用于转化key为index，插入到Storage中
+    HashTable.prototype.hashCode = function (key, limit) {
+      // stringObject.charAt(index) index表示字符串中某个位置的数字，即字符在字符串中的下标。charAt(index)是返回元素，可以用forof代替
+      let result = 0
+      for (let i = 0; i < key.length; i++) {
+        // 霍纳法则，O(N2)->O(N)
+        result = (key.charCodeAt(i) + result) * 37
+        // console.log(result);
+      }
+      // result
+      let index = result % limit
+      return index
+    }
+    // 方法
+    HashTable.prototype.put = function (key, value) {
+      //1.获取索引
+      let index = this.hashCode(key, this.limit)
+      // console.log(index);
+      let bucket = this.Storage[index]
+      // 2.判断是否有bucket
+      if (bucket == null) {
+        // 2.1 没有则创建bucket
+        bucket = []
+        this.Storage[index] = bucket
+      }
+      // else {//此处不用else，直接遍历bucket也行，如果是新创建的，遍历次数为0
+      // 2.2有就遍历bucket 
+      for (let i = 0; i < bucket.length; i++) {
+        const el = bucket[i];
+        // 3.判断bucket中是否有此key
+        if (el[0] == key) {
+          // 3.1有则修改元素
+          let oldValue = el[1]
+          el[1] = value // 此处可直接修改
+          return `Stroge中已存在元素，已修改【${oldValue}->${value}】`//hashTable不允许重复key
+        }
+        // }
+      }
+      bucket.push([key, value])
+      this.elementCount += 1
+      console.log(`put里${this.elementCount}`);
+      // 判断是否需要扩容
+      if (this.elementCount > this.limit * 0.75) {
+        console.log(this.elementCount, this.limit);
+        this.resize(this.limit * 2, key)
+      }
+      return `添加到${index}位置处`
+    }
+    HashTable.prototype.get = function (key) {
+      let index = this.hashCode(key, this.limit)
+      let bucket = this.Storage[index]
+      if (bucket !== null) {
+        for (let i = 0; i < bucket.length; i++) {
+          const el = bucket[i];
+          if (el[0] == key) {
+            return el[1]
+          }
+        }
+      }
+      // return null
+      return "无此元素"
+    }
+    HashTable.prototype.remove = function (key) {
+      let index = this.hashCode(key, this.limit)
+      let bucket = this.Storage[index]
+      if (bucket !== null) {
+        for (let i = 0; i < bucket.length; i++) {
+          const el = bucket[i];
+          if (el[0] == key) {
+            bucket.splice(i, 1)
+            this.elementCount -= 1  //记得总数减一！！
+            // 判断是否需要缩容
+            if (this.elementCount < this.limit * 0.7) {
+              this.resize(8)
+            }
+            return el[1]
+          }
+        }
+      }
+      // return null
+      return "你丫的就没添加这玩意儿，咋删？！"
+    }
+
+    HashTable.prototype.isEmpty = function (key, value) {
+      // 本质上和put一样
+      return this.elementCount == 0
+    }
+    HashTable.prototype.size = function () {
+      return this.elementCount;
+    };
+    // resize来扩容，扩容是需要重新放入所有元素，在添加或者删除元素时进行判断
+    HashTable.prototype.resize = function (newlimit, key) {
+      console.log(`在${key}处resie,新的limit为${newlimit}`);
+      // 保留旧的Storage
+      let oldStorage = this.Storage
+      // 重置所有属性
+      this.Storage = []
+      this.limit = newlimit
+      console.log(this.limit);
+      this.elementCount = 0
+      for (let i = 0; i < oldStorage.length; i++) {
+        const el = oldStorage[i];
+        if (el == null) {
+          continue //跳过本次循环
+        }
+        for (let j = 0; j < el.length; j++) {
+          const tuple = el[j];
+          // this.elementCount += 1//这不用加，put方法里已经加了
+          this.put(tuple[0], tuple[1])
+        }
+      }
+    }
+  }
+  let ht = new HashTable()
+  ht.put('key', 'kkk')
+  ht.put('syh', 'sss')
+  ht.put('yhss', 'yyy')
+  ht.put('yshs', 'yyy')
+  ht.put('yshas', 'hhh')
+  ht.put('ysshs', 'yyy')
+  ht.put('ysghs', 'sssyyyhhh')
+  ht.put('ysgvhs', 'syh')
+  ht.put('ysaghs', 'syh')
+  ht.put('yswghs', 'syh')
+  console.log(ht);
+  // // remove时resize
+  // ht.remove('ysghs')
+  // console.log(ht);
+
+
+</script>
+
+</html>

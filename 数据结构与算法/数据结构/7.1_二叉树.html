@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二叉树</title>
+</head>
+
+<body>
+  <h1>二叉树能够XXX</h1>
+  <h2>二叉搜索树</h2>
+</body>
+<script>
+  function BinarySearchTree() {
+    // 1).define properities
+    this.count = 0    //record length of bst
+    this.root = null  //the root node
+
+    // 2).define inner class 
+    function Node(key) {
+      this.key = key
+      this.left = null  //left pointer
+      this.right = null //right pointer,point to null temporary  //temporal means "of or relating to time as opposed to eternity"
+    }
+    // 3).define methods
+    // 1.insert
+    BinarySearchTree.prototype.insert = function (key) {
+      let newNode = new Node(key), root = this.root, fLeft = null, fRight = null
+      if (!root) {
+        //the first node
+        this.root = newNode
+        this.count++
+      } else {
+        // how to optimize performance???？？？
+        while (root) {
+          // find the last node that is not null,if it"s null,assign newNode to it
+          // console.log(root);
+          if (newNode.key < root.key) {
+            fRight = null
+            fLeft = root
+            root = root.left
+          } else {
+            fLeft = null
+            fRight = root
+            root = root.right
+          }
+        }
+        this.count++
+        if (fRight) {
+          fRight.right = newNode
+          return
+        }
+        fLeft.left = newNode
+      }
+    }
+    BinarySearchTree.prototype.insertByRecursive = function (key) {
+      let newNode = new Node(key)
+      this.insertRecursive(this.root, newNode)
+    }
+    BinarySearchTree.prototype.insertRecursive = function (oldNode, newNode) {
+      if (!oldNode) {
+        oldNode = newNode
+        return
+      }
+      if (oldNode.key > newNode.key) {
+        if (oldNode.left) {
+          this.insertRecursive(oldNode.left, newNode)
+        } else {
+          oldNode.left = newNode
+        }
+      } else {
+        if (oldNode.right) {
+          this.insertRecursive(oldNode.right, newNode)
+        } else {
+          oldNode.right = newNode
+        }
+      }
+    }
+    BinarySearchTree.prototype.preOrderTranversal = function (handler) {
+      this.preOrderTranversalRecursive(this.root, handler)
+    }
+    BinarySearchTree.prototype.preOrderTranversalRecursive = function (node, handler) {
+      if (node !== null) {
+        // 1. 查找经过的节点
+        handler(node.key)
+        // console.log(node.key);
+        // handler(node.key);
+        // 2. 查找经过节点的左子节点
+        this.preOrderTranversalRecursive(node.left, handler);
+        // 3. 查找经过节点的右子节点
+        this.preOrderTranversalRecursive(node.right, handler);
+      }
+    }
+    //sort form smallest to largest,by transposing(swaping the position of) step1 and step3,you can sort it from largest to smallest
+    BinarySearchTree.prototype.midOrderTranversal = function (handler) {
+      this.midOrderTranversalRecursive(this.root, handler)
+    }
+    BinarySearchTree.prototype.midOrderTranversalRecursive = function (node, handler) {
+      if (node) {
+        //1.using recursive to find the node"s left node
+        this.midOrderTranversalRecursive(node.left, handler)
+        // this.midOrderTranversalRecursive(node.right,handler)
+        //2.print node.key
+        handler(node.key)
+        // console.log(node.key);
+        //3.using recursive to find the node"s right node
+        this.midOrderTranversalRecursive(node.right, handler)
+        // this.midOrderTranversalRecursive(node.left,handler)
+      }
+    }
+    // prit node.key after print both of its left and right node"key(or both leftNode and rightNode is null, stop the Recursive)
+    BinarySearchTree.prototype.postOrderTranversal = function (handler) {
+      this.postOrderTranversalRecursive(this.root, handler)
+    }
+    BinarySearchTree.prototype.postOrderTranversalRecursive = function (node, handler) {
+      if (node !== null) {
+        //1.using recursive to find the node"s left node
+        this.postOrderTranversalRecursive(node.left, handler)
+        //2.using recursive to find the node"s right node
+        this.postOrderTranversalRecursive(node.right, handler)
+        //3.print node.key
+        // console.log(node.key);
+        handler(node.key)
+      }
+    }
+    BinarySearchTree.prototype.min = function () {
+      let node = this.root
+      // //first method
+      while (node.left) {
+        node = node.left
+      }
+      return node.key
+      // // or
+      // let key = null
+      // while (node) {
+      //   key = node.key
+      //   node = node.left
+      // }
+      // return key
+    }
+    BinarySearchTree.prototype.max = function () {
+      let node = this.root
+      while (node.right) {
+        node = node.right
+      }
+      return node.key
+    }
+    BinarySearchTree.prototype.search = function (key) {
+      // method 1: while function
+      let node = this.root, fNode = null
+      while (node) {
+        if (key < node.key) {
+          fNode = node
+          node = node.left
+        } else {
+          fNode = node
+          node = node.right
+        }
+      }
+      if (fNode.key == key) {
+        return fNode
+      } else {
+        return `【${key}】 doesn't exist in BinarySearchTree`
+      }
+      //method 2: recursive function
+      this.searchRecursive(node, key)
+    }
+    BinarySearchTree.prototype.searchRecursive = function (node, key) {
+      if (node) {
+        if (key < node.key) {
+          this.searchRecursive(node.left, key)
+        } else {
+          this.searchRecursive(node.right, key)
+        }
+      }
+    }
+  }
+
+
+  // 测试
+  let bst = new BinarySearchTree()
+  bst.insert(11);
+  bst.insert(7);
+  bst.insert(15);
+  bst.insert(5);
+  bst.insert(3);
+  bst.insert(9);
+  bst.insert(8);
+  bst.insert(10);
+  bst.insert(13);
+  bst.insert(12);
+  bst.insert(14);
+  bst.insert(20);
+  bst.insert(18);
+  bst.insert(25);
+  bst.insert(6);
+  console.log(bst);
+  let resultStirng = ''
+  resultStirng += `
+  先序遍历：`
+  // 回调函数
+  let handlerFunction = function (key) {
+    //deliver callback function
+    resultStirng += key + ' '
+  }
+  bst.preOrderTranversal(handlerFunction)  //11 7 5 3 6 9 8 10 15 13 12 14 20 18 25
+
+  console.log(resultStirng);
+  resultStirng += `
+  中序遍历：`
+  bst.midOrderTranversal(handlerFunction)  //sort from smallest to largest
+  console.log(resultStirng);
+  resultStirng += `
+  后序遍历：`
+  bst.postOrderTranversal(handlerFunction)  //3 6 5 8 10 9 7 12 14 13 18 25 20 15 11 
+  console.log(resultStirng);
+  console.log(bst.max());
+  console.log(bst.min());
+  console.log(bst.search(3));
+  console.log(bst.search(32));
+</script>
+
+</html>

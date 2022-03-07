@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      // let a = {}; <br />// console.log(a.constructor == a.__proto__.constructor);<br />
+      //对象也有constructor
+    </div>
+  </body>
+  <script>
+    //缺点：无法设置构造函数的参数【name，age等，只能继承prototype中方法】
+    function Person(name, age, gender) {
+      this.name = name;
+      this.age = age;
+      this.gender = gender;
+    }
+    Person.prototype.sayHi = function () {
+      console.log(this.name);
+    };
+
+    function Student(name, age, gender, score) {}
+    //之前认为的
+    function Student2(name, age, gender, score) {
+      Person.call(this, name, age, gender);
+      this.score = score;
+    }
+
+    Student.prototype = new Person();
+    Student.prototype.constructor = Student;
+
+    Student2.prototype.__proto__ = Person.prototype;
+    console.log(Student.prototype == Student2.prototype);
+    console.log(Student.prototype);
+    console.log([Student2]);
+    console.log(Student2.prototype);
+    // let st = new Student();
+    // console.log(st);
+    // console.log(st.constructor);
+    // console.log(st.__proto__.constructor);
+    // console.dir(st); //在控制台中显示指定JavaScript对象的属性
+  </script>
+</html>
