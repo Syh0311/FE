@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>解决跨域问题</title></title>
+</head>
+<body>
+    <h2>请求方-----</h2></h2>
+    <button id="btn">CROS</button>
+    <button id="btn2">JSONP</button>
+</body>
+<script>
+  const button = document.querySelector("#btn");
+  const button2 = document.querySelector("#btn2");
+  function fn() {
+  fetch("http://127.0.0.1:91")
+    .then((res) => res.text())
+    .then((res) => console.log(res))
+    .catch((err) => console.warn(err));
+  }
+ button.onclick = fn;
+</script>
+<script src="jsonp.js"></script>
+<!-- <script src="http://127.0.0.1:92/?callback=syh"></script> -->
+</html>
