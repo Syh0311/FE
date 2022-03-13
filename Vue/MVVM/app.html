@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div style="display: none;">
+      https://www.bilibili.com/video/BV1qJ411W7YR?from=search&seid=6409969757452837007 <br />
+      https://juejin.cn/post/6844904183938678798#comment <br />
+      原生js-文档碎片https://www.bilibili.com/video/BV1qJ411W7YR?p=2&t=669.3 <br />
+      ------------------------------ <br />
+    </div>
+    <div id="app">
+      <input v-modle="person.name"></input><br />
+      <input v-modle="person.name"></input><br />
+      ------------------------------ <br />
+      <input type="text" v-modle="msg" /><br />
+      <input type="text" v-modle="msg" /><br />
+      <input type="text" v-modle="msg" /><br />
+      ------------------------------ <br />
+      <button v-on:click="clickButton">v-on测试</button><br />
+      <button @click="clickButton">@测试</button><br />
+      ------------------------------ <br />
+      <h5>{{person.name}}---{{person.age}}</h5>
+      <h5>{{msg}}</h5>
+      <h5>只对v-modle做了双向绑定处理</h5>
+      <div v-html="htmlStr"></div>
+    </div>
+  </body>
+  <script src="./Observer.js"></script>
+  <script src="./vue.js"></script>
+  <script>
+    const vue = new Vue({
+      el: "#app",
+      data: {
+        person: {
+          name: "person.name--syh",
+          age: 18,
+        },
+        msg: "同一个dep中不同的watcher",
+        htmlStr: "<h5>v-html绑定的，还没绑定MVVM</h5>",
+      },
+      methods: {
+        clickButton() {
+          console.log(this);
+          alert("注意this的绑定");
+          alert(this.person.name);
+        },
+      },
+    });
+  </script>
+</html>

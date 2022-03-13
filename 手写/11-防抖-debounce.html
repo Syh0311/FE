@@ -7,6 +7,7 @@
     <title>防抖-debounce</title>
   </head>
   <body>
+    <h3>复制加内容</h3>
     <h1>debounce分为 非立即执行版 和 立即执行版 两种</h1>
     <h2>平常用的大多数为 非立即执行版【需要一个timer变量】</br>
         立即执行版较为复杂，另需一个辅助变量帮助理解【共两个变量】</h2>
@@ -20,12 +21,19 @@
 
   </body>
   <script>
+    document.oncopy=(e)=>{
+      // return false;//return false后不能复制到东西
+      const selection = document.getSelection();
+      e.clipboardData.setData('text/plain', selection.toString()+'sssssssssss');
+      e.preventDefault();
+    }
     function inputFn(e) {
       console.log(e.data);//input输入的内容
       console.log(e.target.value);//input元素内的内容
     }
     let input = document.getElementById("input");
     input.oninput = debounce(inputFn, 1000);
+    // input.oninput = inputFn();
 
     // 非立即执行版
     function debounce(fn, delay) {
@@ -33,6 +41,7 @@
       return function () {
         if (timer) clearTimeout(timer);
         timer = setTimeout(() => {
+          console.log('debounce');
           fn.apply(this, arguments);
         }, delay);
       };
