@@ -3,14 +3,16 @@ class Vue {
     this.$options = options;
     this.$el = options.el;
     this.$data = options.data;
-    if (this.$el) {
-      //数据劫持-通知变化
-      new Observer(this.$data);
-      //解析指令初始化视图-订阅数据变化
-      new Compile(this.$el, this);
-    } else {
-      throw new Error("未传入el");
-    }
+
+    //
+    if (!this.$el) throw new Error("未传入el");
+
+    //数据劫持-通知变化
+    new Observer(this.$data);
+    //解析指令初始化视图-订阅数据变化
+    new Compile(this.$el, this);
+
+    //
     this.proxy(this, this.$data);
   }
   proxy(obj, sourceObj) {
@@ -41,6 +43,7 @@ const compileUtil = {
     });
     return temp;
   },
+
   setVal(vm, expr, newVal) {
     const arr = expr.split(".");
     arr.reduce((data, currentVal, index, arr) => {
@@ -50,6 +53,7 @@ const compileUtil = {
       return data[currentVal];
     }, vm.$data);
   },
+
   text(node, expr, vm) {
     //两种情况 <div v-text='preson.name'></div>     {{person.name}}
     let value;
@@ -66,14 +70,17 @@ const compileUtil = {
     // const value = this.getVal(expr, vm);
     // this.updater.textUpdater(node, value);
   },
+
   html(node, expr, vm) {
     const value = this.getVal(expr, vm);
     this.updater.htmlUpdater(node, value);
   },
+
   modle(node, expr, vm) {
     const value = this.getVal(expr, vm);
     // 将当前节点对应的信息放入到watcher中，vue已经对vue.$data中数据做响应式处理，之后再做compile，指令解析时会触发响应式中get方法，new Watcher时在Dep上添加target属性，指向watcher实例，watcher实例中也调用了get方法，从而将watcher实例添加到get的闭包内的dep上【所以watcher内又：watcher.target=null】
     new Watcher(vm, expr, (value) => this.updater.modleUpdater(node, value));
+
     // 视图==>数据==>视图
     node.addEventListener(
       "input",
@@ -83,14 +90,17 @@ const compileUtil = {
       },
       false
     );
+
     // 数据==>视图
     this.updater.modleUpdater(node, value);
   },
+
   on(node, expr, vm, event) {
     //fn需要绑定到vm上
     const fn = vm.$options.methods[expr].bind(vm);
     node.addEventListener(event, fn, false);
   },
+
   updater: {
     //都是数据==>视图的更新
     textUpdater(node, value) {
@@ -115,12 +125,15 @@ class Compile {
 
     //2. 模板编译
     this.compile(fragment);
+
     //3. 追加子元素到父元素上
     this.elm.appendChild(fragment);
   }
+
   isElementNode(node) {
     return node.nodeType === 1;
   }
+
   node2Fragement(el) {
     //使用文档碎片收集，减少页面回流与重绘
     const f = document.createDocumentFragment();
@@ -131,6 +144,7 @@ class Compile {
     }
     return f;
   }
+
   compile(fragment) {
     const childNodes = fragment.childNodes;
     // console.log(Array.isArray(childNodes)); //false 类数组，但是实现了iterator接口
@@ -146,6 +160,7 @@ class Compile {
       }
     });
   }
+
   compileElement(node) {
     const attributes = node.attributes;
     [...attributes].forEach((attr) => {
@@ -166,6 +181,7 @@ class Compile {
       }
     });
   }
+
   compileText(node) {
     // console.log(node.textContent);
     const content = node.textContent;
@@ -178,6 +194,7 @@ class Compile {
   isDirective(attrName) {
     return attrName.startsWith("v-");
   }
+
   isEventName(attrName) {
     return attrName.startsWith("@");
   }

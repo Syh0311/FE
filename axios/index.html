@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button class="btn">发送请求</button>
+    <button class="btn">取消</button>
+    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      // 添加请求拦截器
+      axios.interceptors.request.use(
+        function (config) {
+          // 在发送请求之前做些什么
+          return config;
+        },
+        function (error) {
+          // 对请求错误做些什么
+          return Promise.reject(error);
+        }
+      );
+
+      // 添加响应拦截器
+      axios.interceptors.response.use(
+        function (response) {
+          // 对响应数据做点什么
+          return response;
+        },
+        function (error) {
+          // 对响应错误做点什么
+          return Promise.reject(error);
+        }
+      );
+    </script>
+    <script>
+      const btns = document.querySelectorAll(".btn");
+      const fn = () => {
+        axios
+          .get({
+            methods: "GET",
+            url: "http://49.73.231.120:8012/",
+          })
+          .then((res) => {
+            console.log("[ res ] >", res);
+          })
+          .catch((err) => {
+            console.log("%c [ err ]-50", "font-size:13px; background:pink; color:#bf2c9f;", err);
+          });
+      };
+      btns[0].addEventListener("click", fn);
+      btns[1].addEventListener("click", function () {
+        axios
+          .get({
+            methods: "GET",
+            url: "http://49.73.231.120:8012/",
+          })
+          .then((res) => {
+            console.log("[ res ] >", res);
+          })
+          .catch((err) => {
+            console.log("%c [ err ]-50", "font-size:13px; background:pink; color:#bf2c9f;", err);
+          });
+      });
+    </script>
+  </body>
+</html>

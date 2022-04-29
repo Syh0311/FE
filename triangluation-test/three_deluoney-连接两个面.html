@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: Verdana;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      #info {
+        position: absolute;
+        margin-left: 10px;
+      }
+
+      a {
+        color: yellow;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="./yjztcood.js"></script>
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- https://github.com/mapbox/delaunator -->
+    <!-- <script src="https://unpkg.com/delaunator@3.0.2/delaunator.js"></script> -->
+
+    <script src="https://josephg.github.io/noisejs/perlin.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.3/dat.gui.min.js"></script>
+    <script src="./delaunator.js"></script>
+
+    <script>
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(60, 1, 1, 1000);
+      camera.position.setScalar(150);
+      var renderer = new THREE.WebGLRenderer({
+        antialias: true,
+      });
+      var canvas = renderer.domElement;
+      document.body.appendChild(canvas);
+
+      var controls = new THREE.OrbitControls(camera, canvas);
+
+      var light = new THREE.DirectionalLight(0xffffff, 1.5);
+      light.position.setScalar(100);
+      scene.add(light);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+      var points3d2 = [];
+      const points3 = [];
+
+      for (let item of boundray) {
+        points3.push(new THREE.Vector3(item[0], 30, item[1]));
+        let y = THREE.Math.randFloatSpread(10);
+        points3d2.push(new THREE.Vector3(item[0], y, item[1]));
+      }
+      console.log("%c [ points3 ]-69", "font-size:13px; background:pink; color:#bf2c9f;", points3);
+
+      let newSanjiao = [];
+      for (let i = 0; i < 20; i++) {
+        newSanjiao;
+      }
+
+      //添加随机生成的点云【格子】
+      var geom2 = new THREE.BufferGeometry().setFromPoints(points3d2);
+      var geom3 = new THREE.BufferGeometry().setFromPoints(points3);
+      var cloud2 = new THREE.Points(geom2, new THREE.PointsMaterial({ color: 0xccff, size: 2 }));
+      var cloud3 = new THREE.Points(geom3, new THREE.PointsMaterial({ color: 0xccff, size: 2 }));
+      scene.add(cloud2);
+      scene.add(cloud3);
+
+      // ——————————————————————————————————————————————————————————
+      // for (let i = 0; i < boundray.length; i++) {
+      //   if (i < boundray.length - 1) {
+      //     ttt.push(...points3[i]);
+      //     ttt.push(...points3d2[i]);
+      //     ttt.push(...points3d2[i + 1]);
+
+      //     ttt.push(...points3d2[i + 1]);
+      //     ttt.push(...points3[i]);
+      //     ttt.push(...points3[i + 1]);
+      //   } else {
+      //     ttt.push(...points3[i]);
+      //     ttt.push(...points3d2[i]);
+      //     ttt.push(...points3d2[0]);
+      //     ttt.push(...points3d2[0]);
+      //     ttt.push(...points3[i]);
+      //     ttt.push(...points3[0]);
+      //   }
+      // }
+      const ttt = drawPaths(points3, points3d2);
+      console.log("%c [ points3d2 ]-106", "font-size:13px; background:pink; color:#bf2c9f;", points3d2);
+      console.log("%c [ points3 ]-106", "font-size:13px; background:pink; color:#bf2c9f;", points3);
+      function drawPaths(border1, border2) {
+        // border1  border2是对应好的边界
+        const arr = [];
+        for (let i = 0; i < border1.length; i++) {
+          if (i < border1.length - 1) {
+            arr.push(...border1[i]);
+            arr.push(...border2[i]);
+            arr.push(...border2[i + 1]);
+
+            arr.push(...border2[i + 1]);
+            arr.push(...border1[i]);
+            arr.push(...border1[i + 1]);
+          } else {
+            arr.push(...border1[i]);
+            arr.push(...border2[i]);
+            arr.push(...border2[0]);
+
+            arr.push(...border2[0]);
+            arr.push(...border1[i]);
+            arr.push(...border1[0]);
+          }
+        }
+        return arr;
+      }
+      console.log("%c [ ttt ]-90", "font-size:13px; background:pink; color:#bf2c9f;", ttt);
+      // ——————————————————————————————————————————————————————————
+      const geometry = new THREE.BufferGeometry();
+      // create a simple square shape. We duplicate the top left and bottom right
+      // vertices because each vertex needs to appear once per triangle.
+      // const vertices = new Float32Array([-50, 20, 60, -50, 50, 60, -40, 20, 60, -40, 20, 60, -50, 50, 60, -40, 50, 60]);
+      const vertices = new Float32Array(ttt);
+
+      // itemSize = 3 because there are 3 values (components) per vertex
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+      const material = new THREE.MeshBasicMaterial({ color: "gray", wireframe: false, side: THREE.DoubleSide });
+      const mesh3 = new THREE.Mesh(geometry, material);
+
+      const geometry2 = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+      const material2 = new THREE.MeshBasicMaterial({ color: "blue", wireframe: true, side: THREE.DoubleSide });
+      const mesh32 = new THREE.Mesh(geometry, material2);
+      scene.add(mesh3);
+      scene.add(mesh32);
+
+      var gui = new dat.GUI();
+      gui.add(mesh32.material, "wireframe");
+      gui.add(mesh32.material, "side");
+
+      render();
+
+      function resize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+          renderer.setSize(width, height, false);
+        }
+        return needResize;
+      }
+
+      function render() {
+        if (resize(renderer)) {
+          camera.aspect = canvas.clientWidth / canvas.clientHeight;
+          camera.updateProjectionMatrix();
+        }
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+      }
+    </script>
+  </body>
+</html>

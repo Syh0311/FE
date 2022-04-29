@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #app {
+        display: flex;
+        /* justify-content: space-around; */
+      }
+      ul {
+        max-height: 300px;
+        width: 200px;
+        overflow: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div>
+        <button id="btn">一次性全加上</button>
+        <ul id="ul"></ul>
+      </div>
+
+      <div>
+        <button id="btn2">时间切片</button>
+        <ul id="ul2"></ul>
+      </div>
+    </div>
+  </body>
+  <script src="./bigForLoop.js"></script>
+  <script src="eventLoopFor.js"></script>
+</html>

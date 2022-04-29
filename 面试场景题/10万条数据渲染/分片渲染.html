@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>分片渲染</title>
+  </head>
+  <style>
+    #app {
+      width: 100px;
+      height: 300px;
+      overflow: auto;
+    }
+  </style>
+  <body>
+    <div id="app">
+      <button id="btn">按钮</button></button>
+    </div>
+  </body>
+</html>
+<script>
+  const btn = document.querySelector("#btn");
+
+  btn.addEventListener("click", () => {
+    console.log("[  ] >");
+  });
+</script>
+<script>
+  let index = 0;
+  let total = 5000;
+  let id = 0;
+  function load() {
+    index += 10;
+    if (index <= total) {
+      //定时器属于宏任务，它的执行顺序是等上一个宏任务也就是上一个定时器执行完成之后才能执行
+      setTimeout(() => {
+        for (let i = 0; i < 10; i++) {
+          let item = document.createElement("div");
+          item.innerHTML = id++;
+          app.appendChild(item);
+        }
+        //使用递归的方式
+        load();
+      }, 100);
+    }
+  }
+  load();
+
+  function load2(){
+    while(index<total){
+      
+    }
+  }
+</script>

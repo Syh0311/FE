@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .layout {
+        width: 100%;
+        height: 30px;
+      }
+      .split {
+        padding: 30px 0;
+      }
+      .aside {
+        float: left;
+        width: 80px;
+        height: 100%;
+        background-color: orange;
+        color: #fff;
+      }
+      .main {
+        overflow: hidden;
+        height: 100%;
+        background-color: #03a9f4;
+        color: #fff;
+      }
+      .parent {
+        background-color: orange;
+        overflow: hidden;
+      }
+      .child {
+        float: left;
+        width: 100px;
+        height: 30px;
+        border: 1px solid #999;
+      }
+      .demo3 .a,
+      .demo3 .b {
+        border: 1px solid #999;
+        margin: 10px;
+      }
+      .contain-b {
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>BFC 应用示例 1：两栏自适应布局</h3>
+    <div class="layout">
+      <div class="aside">aside</div>
+      <div class="main">main</div>
+    </div>
+    <div class="split"></div>
+    <h3>BFC 应用示例 2：清除浮动</h3>
+    <div class="parent">
+      <div class="child">child</div>
+      <div class="child">child</div>
+    </div>
+    <div class="split"></div>
+    <h3>BFC 应用示例 3：防止垂直 margin 合并</h3>
+    <div class="demo3">
+      <div class="a">a</div>
+      <div class="contain-b">
+        <div class="b">b</div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    .div1 {
+      /* height: 0;
+      width: 0;
+      border-width: 50px;
+      border-style: solid;
+      border-top-color: #ffc107;
+      border-right-color: #00bcd4;
+      border-bottom-color: #e26b6b;
+      border-left-color: #cc7cda; */
+    }
+    /* 两种写法 */
+    .div1 {
+      height: 0;
+      width: 0;
+      border-top: 50px solid #ffc107;
+      border-right: 50px solid #cc7cda;
+      border-bottom: 50px solid #e26b6b;
+      border-left: 50px solid #00bcd4;
+    }
+    .div2 {
+      height: 0;
+      width: 0;
+      border-top: 50px solid #ffc107;
+      border-right: 25px solid #cc7cda;
+      border-bottom: 50px solid #e26b6b;
+      border-left: 25px solid #00bcd4;
+    }
+    .div21 {
+      height: 0;
+      width: 0;
+      /* border-top: 50px solid #ffc107; */
+      border-right: 25px solid #cc7cda;
+      border-bottom: 50px solid #e26b6b;
+      border-left: 25px solid #00bcd4;
+    }
+    .div3 {
+      height: 0;
+      width: 0;
+      /* border-top: 50px solid transparent; */
+      border-right: 25px solid transparent;
+      border-bottom: 50px solid #e26b6b;
+      border-left: 25px solid transparent;
+    }
+    .div4 {
+      height: 0;
+      width: 0;
+      border-top: 50px solid #ffc107;
+      border-right: 50px solid #cc7cda;
+      border-bottom: 50px solid #e26b6b;
+      border-left: 50px solid #00bcd4;
+    }
+    .div5 {
+      height: 0;
+      width: 0;
+      border-top: 50px solid transparent;
+      border-right: 50px solid transparent;
+      border-bottom: 50px solid #e26b6b;
+      border-left: 50px solid #00bcd4;
+    }
+    .div6 {
+      height: 0;
+      width: 0;
+      border-top: 50px solid transparent;
+      /* border-right: 50px solid transparent; */
+      /* border-bottom: 50px solid #e26b6b; */
+      border-left: 50px solid #00bcd4;
+    }
+  </style>
+  <body>
+    <h3>示例</h3>
+    <div class="div1"></div>
+    <h3>等腰三角形</h3>
+    <div class="div2"></div>
+    <h4>对比注释了top</h4>
+    <div class="div21"></div>
+    <div class="div3"></div>
+    <h3>直角三角形 不能注释 需要透明</h3>
+    <div class="div4"></div>
+    <div class="div5"></div>
+    <h4>对比注释了top</h4>
+    <div class="div6"></div>
+  </body>
+</html>

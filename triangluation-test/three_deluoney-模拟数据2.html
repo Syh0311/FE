@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: Verdana;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      #info {
+        position: absolute;
+        margin-left: 10px;
+      }
+
+      a {
+        color: yellow;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="./yjztcood.js"></script>
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- https://github.com/mapbox/delaunator -->
+    <!-- <script src="https://unpkg.com/delaunator@3.0.2/delaunator.js"></script> -->
+
+    <script src="https://josephg.github.io/noisejs/perlin.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.3/dat.gui.min.js"></script>
+    <script src="./delaunator.js"></script>
+
+    <script type="module">
+      import { drawPaths, findDoundaryDepth, mockBoundary, addLayer, addBoundaryMesh } from "./tools.js";
+      // ——————————————————————————————————————————————————
+      // 初始化
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, 1, 1, 1000);
+      camera.position.setScalar(150);
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+      });
+      const canvas = renderer.domElement;
+      document.body.appendChild(canvas);
+      const controls = new THREE.OrbitControls(camera, canvas);
+      const light = new THREE.DirectionalLight(0xffffff, 1.5);
+      light.position.setScalar(100);
+      scene.add(light);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+      // ——————————————————————————————————————————————————
+      // mock数据
+      const ground = []; //地面边界
+      const layer1 = []; //随机高度
+      const layer2 = []; //随机高度
+      const layer3 = []; //随机高度
+
+      for (let i = -50; i <= 50; i += 5) {
+        for (let j = -50; j <= 50; j += 5) {
+          ground.push(new THREE.Vector3(i, 20, j));
+
+          let y = THREE.Math.randFloatSpread(10);
+          let y2 = THREE.Math.randFloatSpread(10) - 20;
+          let y3 = THREE.Math.randFloatSpread(10) - 40;
+
+          layer1.push(new THREE.Vector3(i, y, j));
+          layer2.push(new THREE.Vector3(i, y2, j));
+          layer3.push(new THREE.Vector3(i, y3, j));
+        }
+      }
+
+      const boundary = mockBoundary();
+      const boundary2 = boundary.map((el) => [el.x, 70, el.z]);
+      // ——————————————————————————————————————————————————————————
+      //每一层
+      const meshGround = addLayer(ground, "gray", 1);
+      const meshL1 = addLayer(layer1, "green");
+      const meshL2 = addLayer(layer2, "red");
+      const meshL3 = addLayer(layer3, "green");
+      // ——————————————————————————————————————————————————————————
+      // 每层之间的边界
+      const mesh1 = addBoundaryMesh(boundary, ground, layer1, "red");
+      const mesh2 = addBoundaryMesh(boundary, layer1, layer2, "green");
+      const mesh3 = addBoundaryMesh(boundary, layer2, layer3, "blue");
+      // ——————————————————————————————————————————————————————————
+      // 添加数据到 group中
+      const group1 = new THREE.Group();
+      group1.add(meshGround, meshL1, mesh1); //上、下、边
+      const group2 = new THREE.Group();
+      group2.add(meshL1.clone(), meshL2, mesh2);
+      const group3 = new THREE.Group();
+      group3.add(meshL2.clone(), meshL3, mesh3);
+
+      scene.add(group1);
+      scene.add(group2);
+      scene.add(group3);
+
+      // ——————————————————————————————————————————————————————————
+      const settings = {
+        layer1移动: 0,
+        layer2移动: 0,
+        "layer1-wireframe": 0,
+        还原: 0,
+      };
+      const gui = new dat.GUI();
+      gui
+        .add(settings, "layer1移动", -100, 100, 0.5)
+        .listen()
+        .onChange(function (z) {
+          group1.position.y = z;
+        });
+
+      gui
+        .add(settings, "layer2移动", -100, 100, 0.5)
+        .listen()
+        .onChange(function (z) {
+          group2.position.y = z;
+        });
+      gui
+        .add(settings, "layer1-wireframe", -100, 100, 0.5)
+        .listen()
+        .onChange(function (z) {
+          let flag = z < 0 ? false : true;
+          console.log("[ flag ] >", flag);
+          // console.log("[ group1 ] >", group1);
+          const meshs = group1.children;
+          meshs.forEach((mesh) => {
+            mesh.material.wireframe = flag;
+            window.mesh = mesh;
+          });
+        });
+
+      // gui.add(group1.material, "wireframe");
+
+      // ——————————————————————————————————————————————————————————
+      // 渲染函数
+      render();
+      function resize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+          renderer.setSize(width, height, false);
+        }
+        return needResize;
+      }
+      function render() {
+        if (resize(renderer)) {
+          camera.aspect = canvas.clientWidth / canvas.clientHeight;
+          camera.updateProjectionMatrix();
+        }
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+      }
+      // ——————————————————————————————————————————————————————————
+      // let aaa = { x: -50, y: -1.0526127185705314, z: -50 };
+      // let bbb = [...aaa];
+      // console.log("%c [ bbb ]-173", "font-size:13px; background:pink; color:#bf2c9f;", bbb);
+    </script>
+  </body>
+</html>

@@ -109,14 +109,11 @@
         if (left >= right) {
           return;
         }
-
         // 2. 获取枢纽
         var pivot = this.medium(left, right);
-
         // 3. 定义变量，用于当前找到的位置
         var i = left;
         var j = right - 1;
-
         // 4. 开始进行交换
         while (i < j) {
           while (this.array[++i] < pivot) {}
@@ -129,7 +126,6 @@
         }
         // 5. 将枢纽放置在正确的位置，i的位置
         this.swap(i, right - 1);
-
         // 6. 分而治之
         this.quick(left, i - 1);
         this.quick(i + 1, right);

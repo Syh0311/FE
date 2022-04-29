@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    .father {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      background-color: rgb(138, 173, 203);
+    }
+    .son {
+      /* absolute也可以作为absolute 的父元素
+        只有static【不设置】不可以
+      */
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background-color: rgb(205, 166, 115);
+
+      left: 20px;
+      top: 10px;
+    }
+    .grandson {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background-color: rgb(228, 228, 160);
+      left: 10px;
+      top: 10px;
+    }
+  </style>
+  <body>
+    <div class="father">
+      <div class="son">
+        <div class="grandson"></div>
+      </div>
+    </div>
+
+    <img style="width: 700px" src="../imgs/left_css.png" alt="MDN-left-解释" title="MDN-left-解释" />
+  </body>
+</html>
