@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button class="btn">发送请求</button>
+    <button class="btn">取消</button>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+      // https://axios-http.com/zh/docs/cancellation
+
+      const btns = document.querySelectorAll(".btn");
+
+      //AbortController基于fetch
+      let controller = new AbortController();
+
+      btns[0].addEventListener("click", () => {
+        console.log("[ axios ]", axios);
+        axios
+          .get("http://localhost:3000", {
+            signal: controller.signal,
+          })
+          .then(function (response) {
+            console.log("[ response ]", response);
+          })
+          .catch((err) => {
+            console.log("[ err ]", err);
+          });
+      });
+      btns[1].addEventListener("click", function () {
+        // 取消请求【如果发出了三个请求，一下把三个都取消了】
+        controller.abort();
+        // controller.signal.aborted = false;//为啥不管用
+        console.log("[ controller ]", controller);
+        controller = new AbortController();
+      });
+    </script>
+  </body>
+</html>

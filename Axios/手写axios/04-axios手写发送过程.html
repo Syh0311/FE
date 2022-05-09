@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 1. 构造函数
+      class Axios {
+        constructor(config) {
+          // 创建default默认对象
+          this.defaults = config;
+          // 拦截器
+          this.intercepters = {
+            request: {},
+            response: {},
+          };
+        }
+        // 原型上的请求方法
+        request(config) {
+          // console.log(`发送AJAX请求  ${config.method}  ---`);
+
+          // 创建promise对象
+          let promise = Promise.resolve();
+
+          const chain = [dispatchRequest, undefined]; //undefined 当请求失败时回调使用,【promise值穿透】
+
+          // 执行回调
+          let result = promise.then(chain[0], chain[1]);
+
+          // 返回promise执行结果
+          return result;
+        }
+        get(config) {
+          return this.request({ method: "GET" });
+        }
+        post(config) {
+          return this.request({ method: "POST" });
+        }
+      }
+
+      // 2. dispatchRequest 函数 【dispatchRequest内部运行的是适配器，dispatchRequest等于是小老板，选择用哪个适配器】
+      function dispatchRequest(config) {
+        // 调用适配器发送请求
+        return xhrAdapter(config).then(
+          (res) => {
+            console.log(res);
+            return res;
+          },
+          (err) => {
+            console.log("[ err ] >", err);
+            throw err;
+          }
+        );
+      }
+
+      // 3. adapter 适配器
+      function xhrAdapter(config) {
+        console.log("xhrAdapter--------");
+
+        // 发送AJAX请求  【真正发送请求的位置】
+        return new Promise((resolve, reject) => {
+          // 初始化
+          const xhr = new XMLHttpRequest();
+          xhr.open(config.method, config.url);
+          // 发送
+          xhr.send();
+          // 绑定事件
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+              //判断成功
+              if (xhr.status >= 200 && xhr.status < 300) {
+                const response = {
+                  //配置对象
+                  config: config,
+                  //响应体
+                  data: xhr.response,
+                  //响应头
+                  headers: xhr.getAllResponseHeaders(), //字符 parseHeaders
+                  // xhr 请求对象
+                  request: xhr,
+                  //响应状态码
+                  status: xhr.status,
+                  //响应状态字符串
+                  statusText: xhr.statusText,
+                };
+                resolve(response);
+              } else {
+                reject(new Error("请求失败，失败码为" + xhr.status));
+              }
+            }
+          };
+        });
+      }
+
+      // 4. 创建axios函数 并发送请求【上一个html文件中有具体写法】
+      const axios = Axios.prototype.request.bind(null);
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/",
+      }).then((res) => {
+        console.log(res);
+      });
+    </script>
+  </body>
+</html>

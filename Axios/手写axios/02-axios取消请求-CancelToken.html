@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button class="btn">发送请求</button>
+    <button class="btn">取消</button>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+      const CancelToken = axios.CancelToken;
+      console.log("[ CancelToken ]", CancelToken);
+      console.dir(axios);
+      const btns = document.querySelectorAll(".btn");
+
+      let controller = new AbortController();
+      console.log("[ controller ]", controller);
+      const fn = () => {
+        console.log("[ axios ]", axios);
+        axios
+          .get("http://localhost:3000", {
+            signal: controller.signal,
+          })
+          .then(function (response) {
+            console.log("[ response ]", response);
+          })
+          .catch((err) => {
+            console.log("[ err ]", err);
+          });
+      };
+
+      btns[0].addEventListener("click", fn);
+      btns[1].addEventListener("click", function () {
+        // 取消请求
+        controller.abort();
+
+        console.log("[ controller ]", controller);
+        controller = new AbortController();
+      });
+    </script>
+  </body>
+</html>

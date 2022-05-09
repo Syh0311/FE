@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 1. 构造函数
+      class Axios {
+        constructor(config) {
+          // 创建default默认对象
+          this.defaults = config;
+          // 拦截器
+          this.interceptors = {
+            request: {},
+            response: {},
+          };
+        }
+        // 原型上的请求方法
+        request(config) {
+          console.log(`发送AJAX请求  ${config.method}  ---`);
+        }
+        get(config) {
+          return this.request({ method: "GET" });
+        }
+        post(config) {
+          return this.request({ method: "POST" });
+        }
+      }
+      Window.Axios = Axios;
+
+      // 2. 声明函数 --  实例化对象并且将类中的方法添加到实例上
+      function create(config) {
+        // 1. 实例化一个对象 【此时可以context.get()  context.post()，但不能context()】
+        const context = new Axios(config);
+
+        // 2. 创建请求函数，【借助新变量instance，实现instance()，但此时instance不能当做对象使用】
+        const instance = Axios.prototype.request.bind(context);
+
+        // 3. 将 Axios.prototype对象上的方法添加到instance函数对象中 【实现instance.get()】
+        Object.getOwnPropertyNames(Axios.prototype).forEach((key) => {
+          if (key == "constructor") return; //为啥用Object.getOwnPropertyNames？？？因为---
+          instance[key] = Axios.prototype[key].bind(context); //绑到实例身上
+        });
+
+        // 4. instance与axios平级，所以需要添加axios内的【defaults、interceptor】
+        Object.keys(context).forEach((key) => {
+          instance[key] = context[key];
+        });
+
+        // 5. 返回可自身为函数同时具有get、post属性的实例
+        return instance;
+
+        // delete instance.name;
+        console.dir(instance);
+      }
+
+      //开始测试--——————————————————————————————
+      const instance = create();
+      instance({ method: "POSTTT" }); //直接执行函数
+      instance.get({}); //当做对象，执行对象上函数
+      instance.post({}); //当做对象，执行对象上函数
+    </script>
+  </body>
+</html>

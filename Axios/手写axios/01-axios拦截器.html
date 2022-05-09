@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button class="btn">发送请求</button>
+    <button class="btn">取消</button>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./axios.js"></script>
+    <script>
+      // const instance = axios.create({
+      //   baseURL: "https://some-domain.com/api/",
+      //   timeout: 1000,
+      //   headers: { "X-Custom-Header": "foobar" },
+      // });
+      // console.dir(axios);
+      // console.dir(instance);
+
+      // 添加请求拦截器
+      // 第一个拦截
+      // use作用是把拦截器放到handler中
+      axios.interceptors.request.use(
+        function (config) {
+          // 在发送请求之前做些什么
+          console.log("请求成功拦截---------111");
+          return config;
+        },
+        function (error) {
+          // 对请求错误做些什么
+          console.log("请求错误拦截---------111");
+          return Promise.reject(error);
+        }
+      );
+      // 第二个拦截
+      axios.interceptors.request.use(
+        function (config) {
+          // 在发送请求之前做些什么
+          console.log("请求成功拦截---------222");
+          return config;
+        },
+        function (error) {
+          // 对请求错误做些什么
+          console.log("请求错误拦截---------222");
+          return Promise.reject(error);
+        }
+      );
+
+      // 添加响应拦截器
+      // 第一个拦截
+      axios.interceptors.response.use(
+        function (response) {
+          // 对响应数据做点什么
+          console.log("响应成功拦截---------111");
+          return response;
+        },
+        function (error) {
+          // 对响应错误做点什么
+          console.log("响应错误拦截---------111");
+          return Promise.reject(error);
+        }
+      );
+      // 第二个拦截
+      axios.interceptors.response.use(
+        function (response) {
+          // 对响应数据做点什么
+          console.log("响应成功拦截---------222");
+          return response;
+        },
+        function (error) {
+          // 对响应错误做点什么
+          console.log("响应错误拦截---------222");
+          return Promise.reject(error);
+        }
+      );
+      axios({
+        method: "post",
+        // url: "http://127.0.0.1:3000/",
+        url: "http://localhost:3000/posts",
+        data: {
+          firstName: "Fred",
+          lastName: "Flintstone",
+        },
+      })
+        .then((res) => {
+          console.log("%c [ res ]-42", "font-size:13px; background:pink; color:#bf2c9f;", res);
+        })
+        .catch((err) => {
+          console.log("%c [ err ]-45", "font-size:13px; background:pink; color:#bf2c9f;", err);
+        });
+    </script>
+  </body>
+</html>

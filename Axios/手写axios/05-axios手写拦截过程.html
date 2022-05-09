@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button class="btn">发送请求</button>
+    <button class="btn">取消</button>
+    <script src="./axios.js"></script>
+    <script>
+      // 创建axios类
+      class Axios {
+        constructor(config) {
+          this.config = config;
+
+          this.interceptors = {
+            request: new InterceptorManager(),
+            response: new InterceptorManager(),
+          };
+        }
+
+        // get post 等请求的接入点
+        request(config) {
+          let promise = Promise.resolve();
+
+          // disPatchRequest 为真正发送请求的
+          const chains = [disPatchRequest, undefined];
+
+          this.interceptors.request.handler.forEach((item) => {
+            chains.unshift(item.resolve);
+            chains.unshift(item.reject);
+          });
+
+          this.interceptors.response.handler.forEach((item) => {
+            chains.push(item.resolve);
+            chains.push(item.reject);
+          });
+          console.log("[ chains ]", chains);
+          while (chains.length > 0) {
+            promise = promise.then(chains.shift(), chains.shift());
+          }
+          return promise;
+        }
+        // 实例身上的方法
+        get(config) {
+          config.method = "GET";
+          this.request(config);
+        }
+        post(config) {
+          config.method = "POST";
+          this.request(config);
+        }
+      }
+      function disPatchRequest() {
+        return new Promise((resolve, reject) => {
+          resolve({
+            statusCode: 200,
+            status: "OK",
+          });
+        });
+      }
+
+      class InterceptorManager {
+        constructor() {
+          this.handler = [];
+        }
+        use(onResolved, onRejected) {
+          this.handler.push({
+            resolve: onResolved,
+            reject: onRejected,
+          });
+        }
+      }
+
+      // create 创建实例【实例本身是函数且实例上有get等方法】
+      function create(config) {
+        // 实现了有方法
+        const context = new Axios(config);
+        console.log(context);
+
+        //2.context是个对象，需要转变为函数，才能直接使用
+        const instance = Axios.prototype.request.bind(context);
+        console.dir(instance);
+
+        //3.instance上需要有【实例的】属性方法
+        const proto = Axios.prototype;
+        Object.getOwnPropertyNames(proto).forEach((key) => {
+          instance[key] = proto[key];
+        });
+
+        //4.instance要和Axios平级【有拦截器等】
+        Object.getOwnPropertyNames(context).forEach((key) => {
+          instance[key] = context[key];
+        });
+        console.dir(instance);
+        return instance;
+      }
+
+      const instanceSyh = create({});
+      console.dir(instanceSyh);
+
+      //开始测试--——————————————————————————————————
+
+      // 添加请求拦截器
+      // 第一个拦截
+      // use作用是把拦截器放到handler中
+      instanceSyh.interceptors.request.use(
+        function (config) {
+          // 在发送请求之前做些什么
+          console.log("请求成功拦截---------111");
+          return config;
+        },
+        function (error) {
+          // 对请求错误做些什么
+          console.log("请求错误拦截---------111");
+          return Promise.reject(error);
+        }
+      );
+      // 第二个拦截
+      instanceSyh.interceptors.request.use(
+        function (config) {
+          // 在发送请求之前做些什么
+          console.log("请求成功拦截---------222");
+          return config;
+        },
+        function (error) {
+          // 对请求错误做些什么
+          console.log("请求错误拦截---------222");
+          return Promise.reject(error);
+        }
+      );
+
+      // 添加响应拦截器
+      // 第一个拦截
+      instanceSyh.interceptors.response.use(
+        function (response) {
+          // 对响应数据做点什么
+          console.log("响应成功拦截---------111");
+          return response;
+        },
+        function (error) {
+          // 对响应错误做点什么
+          console.log("响应错误拦截---------111");
+          return Promise.reject(error);
+        }
+      );
+      // 第二个拦截
+      instanceSyh.interceptors.response.use(
+        function (response) {
+          // 对响应数据做点什么
+          console.log("响应成功拦截---------222");
+          return response;
+        },
+        function (error) {
+          // 对响应错误做点什么
+          console.log("响应错误拦截---------222");
+          return Promise.reject(error);
+        }
+      );
+
+      // 模拟请求
+      instanceSyh({
+        method: "post",
+        // url: "http://127.0.0.1:3000/",
+        url: "http://localhost:3000/posts",
+        data: {
+          firstName: "Fred",
+          lastName: "Flintstone",
+        },
+      })
+        .then((res) => {
+          console.log("[ res ]", res);
+        })
+        .catch((err) => {
+          console.log("[ err ]", err);
+        });
+    </script>
+  </body>
+</html>
