@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <img id="image0" src="https://www.w3.org/Icons/w3c_main.png" />
+    <script>
+      const time = performance.timing;
+      console.log(time);
+      init();
+      function init() {
+        performance.mark("startWork");
+        setTimeout(() => {
+          performance.mark("endWork");
+          performance.measure("work_syh", "startWork", "endWork");
+          measurePerf();
+          console.log("------------");
+          measurePerfByName();
+        }, 2000);
+      }
+
+      function measurePerf() {
+        // 使用了performance.getEntries来获取浏览器缓冲区中所有的性能数据记录
+        performance
+          // 获取所有[navigator,resource,first-paint,first-content-paint,自定义-mark添加的]
+          .getEntries()
+          .map((entry) => JSON.stringify(entry, null, 2))
+          .forEach((json) => console.log(json));
+      }
+
+      function measurePerfByName() {
+        // 使用xx获取浏览器缓冲区内部所有名称对应的性能记录
+        performance
+          .getEntriesByName("work_syh")
+          .map((entry) => JSON.stringify(entry, null, 2))
+          .forEach((json) => console.log(json));
+        performance.getEntriesByType;
+      }
+    </script>
+  </body>
+</html>

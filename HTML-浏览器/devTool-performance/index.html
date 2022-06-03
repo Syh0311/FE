@@ -1,0 +1,26 @@
+<!-- referenced in: https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/ -->
+<!-- github地址 https://github.com/GoogleChrome/devtools-samples -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="shortcut icon" href="favicon-96x96.png" />
+    <title>Janky Animation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <script src="app.js" async></script>
+  </head>
+  <body>
+    <!-- 对于本例子较好的教程 https://juejin.cn/post/6977637532494200863#heading-0   更多的在掘金收藏夹内-->
+    <img class="proto mover" src="favicon-96x96.png" />
+    <div class="controls">
+      <button class="add"></button>
+      <button class="subtract" disabled></button>
+      <button class="stop">Stop</button>
+      <button class="optimize">Optimize</button>
+      <a href="https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/" target="_blank">
+        <button class="optimize">Help</button>
+      </a>
+    </div>
+  </body>
+</html>

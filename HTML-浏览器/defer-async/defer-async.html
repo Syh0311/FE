@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+  </head>
+  <body>
+    <h2>打印顺序</h2>
+    <script src="./async.js" async></script>
+    <script src="./defer.js" defer></script>
+    <script>
+      console.log("Start");
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("DOMContentLoaded----");
+      });
+      for (let i = 0; i < 10000; i++) {
+        console.log(1);
+      }
+    </script>
+  </body>
+</html>

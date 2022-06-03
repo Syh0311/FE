@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <ul>
+      <ul>
+        <!-- 定义路由 -->
+        <li><a href="#home">home</a></li>
+        <li><a href="#about">about</a></li>
+        <h2>--------------------</h2>
+
+        <!-- 渲染路由对应的 UI -->
+        <div id="autoSelect"></div>
+      </ul>
+    </ul>
+  </body>
+  <script>
+    const routerView = autoSelect;
+
+    console.log("[ location ]", location);
+
+    // 监听hashchange
+    window.addEventListener("hashchange", () => {
+      const hash = location.hash;
+      routerView.innerHTML = hash;
+    });
+
+    // 页面第一次加载不会触发hashchange时间 所以需要手动处理
+    window.addEventListener("DOMContentLoaded", () => {
+      if (!location.hash) {
+        //如果不存在hash值，那么重定向到#syh
+        location.hash = "syh";
+      } else {
+        //如果存在hash值，那就渲染对应UI
+        const hash = location.hash;
+        routerView.innerHTML = hash;
+      }
+    });
+  </script>
+</html>
