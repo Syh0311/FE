@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <style>
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+      }
+
+      /* 隐藏滚动条 */
+      .box-content {
+        -ms-overflow-style: none; /* IE10 */
+        scrollbar-width: none; /* Firefox */
+        overflow: -moz-scrollbars-none; /* 旧版Firefox */
+      }
+
+      /* chrome  隐藏滚动条 */
+      .box-content::-webkit-scrollbar {
+        display: none;
+      }
+
+      .box {
+        display: flex;
+        height: 100%;
+      }
+
+      .box > .box-content {
+        width: 100%;
+        overflow: auto;
+      }
+
+      .box > .box-content > p {
+        height: 500px;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .box > .box-content > p > span {
+        color: #ffffff;
+        font-size: 40px;
+      }
+
+      .scroll-bar {
+        width: 20px;
+        background: #00b7ee;
+      }
+
+      .scroll-bar > div {
+        background: #030303;
+      }
+
+      .scroll-bar > div:active {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="box-content">
+        <p style="background: #aabbce">
+          <span>内容1</span>
+        </p>
+        <p style="background: #b6a0a5">
+          <span>内容2</span>
+        </p>
+        <p style="background: #357376">
+          <span>内容3</span>
+        </p>
+        <p style="background: #938d8e">
+          <span>内容4</span>
+        </p>
+        <p style="background: #dec5c5">
+          <span>内容5</span>
+        </p>
+        <p style="background: #ddbcac">
+          <span>内容6</span>
+        </p>
+        <p style="background: #bdbdbd">
+          <span>内容7</span>
+        </p>
+        <p style="background: #f1dfbe">
+          <span>内容8</span>
+        </p>
+      </div>
+      <div class="scroll-bar">
+        <div></div>
+      </div>
+    </div>
+    <script>
+      let count = 0;
+      let doc = document;
+      let box = doc.querySelector(".box");
+      let content = doc.querySelector(".box-content");
+      let scrollBar = doc.querySelector(".scroll-bar");
+      let scroll = doc.querySelector(".scroll-bar > div");
+
+      content.scrollTop = 0;
+
+      /**
+       * 监听窗口大小变化
+       **/
+      window.onresize = function () {
+        // 重新计算滚动条百分比
+        scroll.style.transform = `translateY(${Math.round((content.scrollTop / scrollBar.clientHeight) * 100)}%)`;
+
+        return customScrollBar();
+      };
+
+      customScrollBar();
+
+      function customScrollBar() {
+        let boxTop = null; // .box 距离页面顶部的距离
+        let scrollBarHeight = scrollBar.clientHeight; // .scroll-bar 可视区域高度
+        let contentSH = content.scrollHeight; // .box-content 高度，包括被卷入的高度
+        let contentCH = content.clientHeight; // .box-content 可视区域高度
+        let multiple = contentSH / contentCH; // 滚动条移动倍数
+        let num = contentCH * (contentCH / contentSH); // 计算滚动条内可滚动部分的长度
+
+        scroll.style.height = `${num}px`;
+
+        // scrollHeight小于等于clientHeight不显示滚动条
+        if (contentCH >= contentSH) {
+          scrollBar.style.display = "none";
+        } else if (scrollBar.style.display === "none") {
+          scrollBar.style.display = "block";
+        }
+
+        /**
+         * 滚动条滚动事件
+         **/
+        content.addEventListener("scroll", function () {
+          scroll.style.transform = `translateY(${Math.round((this.scrollTop / scrollBarHeight) * 100)}%)`;
+        });
+
+        /**
+         * 鼠标移动事件
+         **/
+        function mouseEvents(e) {
+          // e.clientY - box.getBoundingClientRect().top 计算鼠标在元素上的位置，用以适应被其他元素包裹
+          // (计算鼠标在元素上的位置 * multiple)滚动条距离顶部偏移量（等于百分比转换前的数值）
+          // count - 滚动条距离顶部偏移量 = 滚动条移动时保证鼠标一直在点击的位置
+          content.scrollTop = (e.clientY - boxTop) * multiple - count;
+        }
+
+        /**
+         * 鼠标点击事件
+         * @see mouseEvents
+         **/
+        scroll.onmousedown = function (e) {
+          // 禁止选中文字
+          doc.onselectstart = function () {
+            return false;
+          };
+          // .box 距离页面顶部的距离
+          boxTop = box.getBoundingClientRect().top;
+
+          count = e.offsetY * multiple;
+          // .box添加鼠标移动事件
+          box.addEventListener("mousemove", mouseEvents);
+        };
+
+        /**
+         * 松开鼠标按键
+         * @see mouseEvents
+         **/
+        box.onmouseup = function () {
+          // 移除.box鼠标移动事件
+          this.removeEventListener("mousemove", mouseEvents);
+          // 启用选中文字
+          doc.onselectstart = function () {
+            return true;
+          };
+        };
+
+        /**
+         * 鼠标离开.box
+         * @see mouseEvents
+         **/
+        box.onmouseleave = function () {
+          // 移除.box鼠标移动事件
+          this.removeEventListener("mousemove", mouseEvents);
+          // 启用选中文字
+          doc.onselectstart = function () {
+            return true;
+          };
+        };
+      }
+    </script>
+  </body>
+</html>

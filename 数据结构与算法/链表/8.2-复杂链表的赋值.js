@@ -5,7 +5,7 @@ function RandomListNode(x) {
 }
 
 function Clone(pHead) {
-  // 都是啥！！！？？？
+  // 都是啥！！！？？
   if (!pHead) {
     return null;
   }
@@ -15,5 +15,5 @@ function Clone(pHead) {
   return head;
 }
 module.exports = {
-  Clone: Clone
+  Clone: Clone,
 };

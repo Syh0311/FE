@@ -13,7 +13,7 @@ function mergePromise(arr) {
       }); //屁股上加了then【把ajax套到后边】，把所有arr变成一个then了
   });
   setTimeout(() => {
-    console.log("syh----"); //为啥会先输出？？？【因为ajax1，time中有settimeout，定时结束后才resolve，此时微任务队列为空，就执行了宏任务的第一个，这也是 函数能按数组顺序输出的 原因】
+    console.log("syh----"); //为啥会先输出？？【因为ajax1，time中有settimeout，定时结束后才resolve，此时微任务队列为空，就执行了宏任务的第一个，这也是 函数能按数组顺序输出的 原因】
   }, 0);
   return p;
 }

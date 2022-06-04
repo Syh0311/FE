@@ -26,7 +26,7 @@
       ArrayList.prototype.toString = function () {
         // return 'ssss'  //alert下默认调用toString方法！！！
         return this.array.join("-");
-        // 【关联：toString() 与 join() 区别？？？】
+        // 【关联：toString() 与 join() 区别？？】
       };
 
       // 2.3 swap
@@ -101,7 +101,7 @@
       // 2. 快速排序的实现
       ArrayList.prototype.quickSort = function () {
         this.quick(0, this.array.length - 1);
-        //为啥要-1？？？  -1才是最右边的，傻了！！！
+        //为啥要-1？？  -1才是最右边的，傻了！！！
       };
 
       ArrayList.prototype.quick = function (left, right) {

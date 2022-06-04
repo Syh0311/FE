@@ -34,7 +34,7 @@
           }
           current.next = newNode;
         }
-        this.length += 1; //这句话注释掉的话，head里只有最后一个，why？？？
+        this.length += 1; //这句话注释掉的话，head里只有最后一个，why？？
       };
       LinkedList.prototype.insert = function (element, index) {
         if (index < 0 || index > this.length) {

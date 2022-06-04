@@ -1,4 +1,4 @@
-//法一：过于高级的方法！！！【找最小公倍数？？？】
+//法一：过于高级的方法！！！【找最小公倍数？？】
 
 /*function ListNode(x){
     this.val = x;
@@ -14,8 +14,8 @@ function FindFirstCommonNode(pHead1, pHead2) {
     p1 = p1 ? p1.next : pHead2;
     p2 = p2 ? p2.next : pHead1;
   }
-  return p1
+  return p1;
 }
 module.exports = {
-  FindFirstCommonNode: FindFirstCommonNode
+  FindFirstCommonNode: FindFirstCommonNode,
 };

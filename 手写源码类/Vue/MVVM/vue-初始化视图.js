@@ -83,7 +83,7 @@ const compileUtil = {
 
 class Compile {
   constructor(el, vm) {
-    this.vm = vm; //???
+    this.vm = vm; //？？
     this.elm = document.querySelector(el); //没判断
     //1. 获取文档碎片，放到内存中，减少页面回流与重绘
     const fragment = this.node2Fragement(this.elm);

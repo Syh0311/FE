@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button class="btn">button</button>
+
+    <script type="module">
+      import { foo } from "./dynamicBind.js";
+
+      for (let i = 0; i < 100; i++) {
+        console.log(foo); //bar ---变化前
+      }
+      setTimeout(() => {
+        console.log(foo); //baz ---变化后
+      }, 1000);
+
+      // // 点的早--变化前，晚---变化后
+      // const btn = document.querySelector(".btn");
+      // btn.onclick = (e) => {
+      //   console.log(foo); //bar ---变化前
+      // };
+    </script>
+  </body>
+</html>

@@ -5,7 +5,7 @@ function RandomListNode(x) {
 }
 
 function Clone(pHead) {
-  //啥情况，感觉莫名其妙的就复制了！！！？？？
+  //啥情况，感觉莫名其妙的就复制了！！！？？
 
   // write code here
   //1.极端情况
@@ -20,9 +20,8 @@ function Clone(pHead) {
     h = h.next;
     pHead = pHead.next;
   }
-  return newLinkedList
-
+  return newLinkedList;
 }
 module.exports = {
-  Clone: Clone
+  Clone: Clone,
 };

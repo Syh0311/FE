@@ -20,7 +20,7 @@ const add2 = (a, b) => {
 
 //call
 Function.prototype.call = function (thisArg, ...args) {
-  // console.log(this); //为啥node下 max callback？？？
+  // console.log(this); //为啥node下 max callback？？
   thisArg = thisArg || window;
   thisArg.fn = this;
   const res = thisArg.fn(...args);

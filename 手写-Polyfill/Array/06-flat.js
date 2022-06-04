@@ -53,7 +53,7 @@ Array.prototype.flat = function (depth) {
   return arr;
 };
 
-// reduce且控制flat深度？？？!!!
+// reduce且控制flat深度？？!!!
 Array.prototype.faltReduceDeep = function (depth) {
   let arr = this;
 

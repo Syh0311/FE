@@ -1,48 +1,44 @@
-能写plugin和loader
+能写 plugin 和 loader
 
-vite原理
+vite 原理
 
 ## 1.简介
 
-node环境下：require，可通过插件再浏览器中实现require；
+node 环境下：require，可通过插件再浏览器中实现 require；
 
-esm新规范：import export 【需将script标签设置为type:'module'】
+esm 新规范：import export 【需将 script 标签设置为 type:'module'】
 
-webpack：不管是require、esm新规范、图片、css、模块拆分，都可以打包
+webpack：不管是 require、esm 新规范、图片、css、模块拆分，都可以打包
 
 ## 2. 安装-使用
 
-cnpm install webpack webpack-cli --global  【全局】
+cnpm install webpack webpack-cli --global 【全局】
 
-cnpm install webpack webpack --save-dev   【本地】
+cnpm install webpack webpack --save-dev 【本地】
 
-webpack-cli 可以使得在全局终端中使用webpack
-
-
+webpack-cli 可以使得在全局终端中使用 webpack
 
 npx webpack
 
 ## [资源模块](https://webpack.docschina.org/guides/asset-modules/)
 
-使用`资源模块`代替所有loader
+使用`资源模块`代替所有 loader
 
-
-
-webpack只能理解js和json格式的文件，所以需要loader
+webpack 只能理解 js 和 json 格式的文件，所以需要 loader
 
 ## css loader plugin
 
-1. 安装对应所需 loader和plugin
+1. 安装对应所需 loader 和 plugin
 
    ```node
    cnpm i less-loader css-loader style-loader mini-css-extract-plugin css-minimizer-webpack-plugin -D
    ```
 
-2. 如果有less样式，先将less解析为css
+2. 如果有 less 样式，先将 less 解析为 css
 
-3. 使用【css-loader】先识别css文件；
+3. 使用【css-loader】先识别 css 文件；
 
-4. 使用【style-loader】把css放到页面上；
+4. 使用【style-loader】把 css 放到页面上；
 
    ```js
    module: {
@@ -55,7 +51,7 @@ webpack只能理解js和json格式的文件，所以需要loader
    },
    ```
 
-5. 将所有css放到一个文件中【mini-css-extract-plugin   webpack5下才能用】
+5. 将所有 css 放到一个文件中【mini-css-extract-plugin webpack5 下才能用】
 
    ```
    plugins: [
@@ -65,9 +61,7 @@ webpack只能理解js和json格式的文件，所以需要loader
    ],
    ```
 
-   
-
-6. 使用【css-minimizer-webpack-plugin】插件压缩css代码  【写到optimization内，同时mode改为 production】
+6. 使用【css-minimizer-webpack-plugin】插件压缩 css 代码 【写到 optimization 内，同时 mode 改为 production】
 
    ```
    optimization: {
@@ -77,13 +71,13 @@ webpack只能理解js和json格式的文件，所以需要loader
    },
    ```
 
-7. 
+7.
 
-css中加载img
+css 中加载 img
 
 ## bable-loader
 
-1. 目的：将es6代码编译为ES5，使得代码能运行在老旧浏览器上
+1. 目的：将 es6 代码编译为 ES5，使得代码能运行在老旧浏览器上
 
    ```js
    cnpm i -D babel-loader @babel/core @babel/preset-env
@@ -94,16 +88,16 @@ css中加载img
    ```js
    //安装包 【这个包中有regeneratorRuntime】
    cnpm i -S @babel/runtime
-   
+
    //安装插件 这个插件会在需要regeneratorRuntime的地方自动require 导入包
    cnpm i -D @babel/plugin-transform-runtime
    ```
 
-3. 修改webpack.config.json
+3. 修改 webpack.config.json
 
    ```js
    module: {
-     rules: [ 
+     rules: [
        {
          //【只是】为了兼容不支持的浏览器，像是chrome，不需要这个插件也能支持最新语法【await等】
          test: /\.js$/,
@@ -124,8 +118,6 @@ css中加载img
    },
    ```
 
-   
-
 ## [代码分离](https://webpack.docschina.org/guides/code-splitting#root)
 
 ### 入口起点
@@ -138,10 +130,10 @@ entry: {
   index: "./src/index.js",
   another: "./src/another-module.js",
 },
-    
+
 //两个入口时，出口要加 [name]
 output: {
-  filename: "[name].bundle.js", //为啥name是main？？？
+  filename: "[name].bundle.js", //为啥name是main？？
   path: path.resolve(__dirname, "./dist"),
   clean: true, //清空上次打包结果【清空dist】
   assetModuleFilename: "images/[contenthash][ext]", //生成对应的hash值和后缀【此处优先级低于module中】
@@ -155,7 +147,7 @@ output: {
 
 ### 防止重复
 
-#### 1. dependOn和share
+#### 1. dependOn 和 share
 
 尽管可以在 webpack 中允许每个页面使用多入口，应尽可能避免使用多入口的入口：`entry: { page: ['./analytics', './app'] }`。如此，在使用 `async` 脚本标签时，会有更好的优化以及一致的执行顺序。
 
@@ -196,9 +188,9 @@ optimization: {
 
 ### 动态导入
 
-使用import
+使用 import
 
-js文件内import，
+js 文件内 import，
 
 ### 动态导入应用
 
@@ -206,17 +198,17 @@ js文件内import，
 
 **`选择`**：preFetch > 懒加载 = preLoad
 
-webpack的`魔法注释`
+webpack 的`魔法注释`
 
-1. 懒加载：假设有个按钮，按钮添加点击事件，使用动态导入，则在点击按钮时才会加载这个js文件，否则不加载
-2. preFetch：在动态导入前加【魔法注释】，规定这是prefetch，系统会在网页都加载完后【不影响首屏加载速度】，空闲下来了，再去加载这个文件；
+1. 懒加载：假设有个按钮，按钮添加点击事件，使用动态导入，则在点击按钮时才会加载这个 js 文件，否则不加载
+2. preFetch：在动态导入前加【魔法注释】，规定这是 prefetch，系统会在网页都加载完后【不影响首屏加载速度】，空闲下来了，再去加载这个文件；
 3. preLoad：跟懒加载逻辑一样
 
 ## 缓存
 
 **`步骤`**
 
-1. 设置打包后js文件名称【contenthash由文件内容计算出】
+1. 设置打包后 js 文件名称【contenthash 由文件内容计算出】
 
    ```js
    output: {
@@ -227,7 +219,7 @@ webpack的`魔法注释`
    },
    ```
 
-2. 虽有【contenthash】，但两次打包内容依然名称不同【`现在好像不设置也相同`】，因为：因为 webpack 在入口 chunk 中，包含了某些 boilerplate(引导模板)，特别是 runtime 和 manifest。 
+2. 虽有【contenthash】，但两次打包内容依然名称不同【`现在好像不设置也相同`】，因为：因为 webpack 在入口 chunk 中，包含了某些 boilerplate(引导模板)，特别是 runtime 和 manifest。
 
    ```js
    //所以需要在optimization中设置
@@ -257,20 +249,18 @@ webpack的`魔法注释`
 
 4. 【contenthash】的缓存作用：
 
-   文件名称是通过设置为【contenthash】时，名称根据文件内容变动，若文件内容没变化，则打包出的dist名称不变，前端缓存就仍然相同，【此处针对协商缓存中eTag】；
+   文件名称是通过设置为【contenthash】时，名称根据文件内容变动，若文件内容没变化，则打包出的 dist 名称不变，前端缓存就仍然相同，【此处针对协商缓存中 eTag】；
 
-   对于强缓存，如果在max-age没过期之前想更新缓存，可以：
+   对于强缓存，如果在 max-age 没过期之前想更新缓存，可以：
 
-   1. 更新文件名，则html单页面请求js文件时，名字改变了的，会重新请求；
+   1. 更新文件名，则 html 单页面请求 js 文件时，名字改变了的，会重新请求；
    2. ctrl + F5，刷新同时`清楚本地缓存`，则对于强缓存的数据需要重新加载。
-
-
 
 ## 环境变量
 
 1. 公共路径：publicPath 【生产环境下需要】
 
-2. webpack命令传入参数
+2. webpack 命令传入参数
 
    ```bash
    npx webpack --env goal=local --env production --progress
@@ -278,11 +268,11 @@ webpack的`魔法注释`
 
 3. `module.exports` 转换为函数
 
-4. pruduction环境下js压缩
+4. pruduction 环境下 js 压缩
 
    ```js
    cnpm install terser-webpack-plugin -D
-   
+
    minimizer: [
      new CssMinimizerPlugin(), //css压缩
      new TerserPlugin(), //js压缩   压缩后3.15Mb --> 3.12Mb
@@ -290,16 +280,14 @@ webpack的`魔法注释`
    ```
 
 5. 拆分配置文件
-   config文件夹下两个不同的配置文件【注意打包dist路径问题】，开发环境不需要压缩
+   config 文件夹下两个不同的配置文件【注意打包 dist 路径问题】，开发环境不需要压缩
 
 6. 提取公共配置后-【`深merge`】
-   对三个文件进行  深merge
+   对三个文件进行 深 merge
 
    ```
    npm -i webpack-merge -D
    ```
-
-   
 
 ## 高阶
 
@@ -315,20 +303,20 @@ For development, use `cheap-module-eval-source-map`. For production, use `cheap-
 
 ### 4. eslint
 
-### 5. git-hooks与husky
+### 5. git-hooks 与 husky
 
 ## 2.模块与依赖
 
-### webpack模块与解析原理
+### webpack 模块与解析原理
 
 ### [模块解析(resolve)](https://webpack.docschina.org/concepts/module-resolution/#root)
 
 resolver 是一个帮助寻找模块绝对路径的库。 一个模块可以作为另一个模块的依赖模块，然后被后者引用，如下：
 
 ```js
-import foo from 'path/to/module';
+import foo from "path/to/module";
 // 或者
-require('path/to/module');
+require("path/to/module");
 ```
 
 所依赖的模块可以是来自应用程序的代码或第三方库。 resolver 帮助 webpack 从每个 `require`/`import` 语句中，找到需要引入到 bundle 中的模块代码。 当打包模块时，webpack 使用 [enhanced-resolve](https://github.com/webpack/enhanced-resolve) 来解析文件路径。

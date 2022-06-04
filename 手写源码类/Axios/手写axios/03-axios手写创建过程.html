@@ -42,7 +42,7 @@
 
         // 3. 将 Axios.prototype对象上的方法添加到instance函数对象中 【实现instance.get()】
         Object.getOwnPropertyNames(Axios.prototype).forEach((key) => {
-          if (key == "constructor") return; //为啥用Object.getOwnPropertyNames？？？因为---
+          if (key == "constructor") return; //为啥用Object.getOwnPropertyNames？？因为---
           instance[key] = Axios.prototype[key].bind(context); //绑到实例身上
         });
 
