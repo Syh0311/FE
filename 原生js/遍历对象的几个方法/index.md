@@ -1,0 +1,50 @@
+## 遍历对象的几个方法
+
+1. for...in：原型链上的key也会打印出来；
+2. for...of：只有拥有【`[Symbol.iterator]接口`的obj才能打印出】；
+以下三个`返回数组`，需要再遍历；
+3. Object.keys(obj)：obj上`可枚举`的key的数组；  Objeck.entries()同
+4. Object.getOwnPropertyNames(obj)：可枚举和`不可枚举`的key组成的数组；
+5. Object.getOwnPropertySymbols(obj)：返回所有`Symbol属性`的数组。
+5. `Reflect.ownKeys(obj)`：可枚举、不可枚举、Symbol类型的属性`都可获取`
+
+## 遇到过的问题
+
+`axios源码时候【class声明的构造函数的prototype不可枚举】`
+
+所以没法通过Object.keys(Axios.prototype)或者for...in获取其中key【request get post】
+
+只能使用`Object.getOwnPropertyNames(Axios.prototype)`;
+
+```js
+// axios源码时候【class声明的构造函数的prototype不可枚举】
+class Axios {
+  constructor(config) {
+    // 创建default默认对象
+    this.defaults = config;
+    // 拦截器
+    this.intercepters = {
+      request: {},
+      response: {},
+    };
+  }
+  // 原型上的请求方法
+  request(config) {
+    console.log(`发送AJAX请求  ${config.method}  ---`);
+  }
+  get(config) {
+    return this.request({ method: "GET" });
+  }
+  post(config) {
+    return this.request({ method: "POST" });
+  }
+}
+
+// 这用 for...in取不到Axios.prototype上的key【request get post】
+Object.getOwnPropertyNames(Axios.prototype).forEach((key) => {
+  if (key == "constructor") return;
+  instance[key] = proto[key].bind(context); //绑到实例身上
+});
+```
+
+## for...in打印原型链
