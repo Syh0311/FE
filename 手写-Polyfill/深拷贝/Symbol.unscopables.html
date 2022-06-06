@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // [Symbol.unscopables]属性指向的对象没constructor！！
+      const impossibleCircle = [Number, String, Boolean, Error, RegExp, Date];
+      window.cloneObj = deepClone(Array.prototype);
+      console.log("[ cloneObj ]", cloneObj);
+      function deepClone(obj, checkMap = new WeakMap()) {
+        // 0. 递归出口 --【1. primitive 2. map.has(obj) 3.fn】
+        if (typeof obj != "object" || obj === null) return obj;
+        if (checkMap.has(obj)) return checkMap.get(obj);
+        if (typeof obj === "function") return obj;
+
+        // 1. 初始化变量
+        console.log(typeof obj);
+        window.obj = obj;
+        const objConstructor = obj.constructor;
+
+        // 2. 判断是否为WeakMap、WeakSet
+        if ([WeakMap, WeakSet].includes(objConstructor)) {
+          console.log(`${obj}不可复制，不复制，直接返回`);
+          return obj;
+        }
+
+        // 3. 判断是否为symbol的对象 -- Object(Symblo('syh'))
+        // 奇怪的情况 Symbol没法new  【平时应该没这个场景】
+        if (objConstructor === Symbol) return Object(Symbol(obj.description));
+
+        // 4. RegExp Date String Number Boolean Error 无循环引用
+        if (impossibleCircle.includes(objConstructor)) return new objConstructor(obj);
+
+        // 此时情况只剩map set array object 声明cloneObj并加到checkMap中
+        // debugger;
+        const cloneObj = new objConstructor();
+        checkMap.set(obj, cloneObj);
+
+        // 5. 判断是Map Set 【可能有循环引用
+        if (objConstructor === Set) {
+          // 注意回调的参数
+          obj.forEach((value) => {
+            cloneObj.add(deepClone(value, checkMap));
+          });
+          return cloneObj;
+        }
+        if (objConstructor === Map) {
+          obj.forEach((value, key) => {
+            // 注意回调的参数
+            cloneObj.set(key, deepClone(value, checkMap));
+          });
+          return cloneObj;
+        }
+
+        // 6. Array、Object 【可能有循环引用
+        Reflect.ownKeys(obj).forEach((key) => {
+          if (key.description && key.description === "Symbol.unscopables") {
+            return;
+          }
+          console.log(key);
+          // debugger;
+          cloneObj[key] = deepClone(obj[key], checkMap);
+        });
+
+        return cloneObj;
+      }
+    </script>
+  </body>
+</html>
