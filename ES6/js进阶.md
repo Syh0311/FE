@@ -1520,7 +1520,7 @@ for (var x of a) {
 5. finally不接收来自resolve或者reject的参数，因为finally`压根就不知道`到底是resolve还是reject了【不知道promise的最终状态】；
 
 6. `终止链式调用`的方法：
-    promise.then(return new Promise(()=>{}))，
+    promise.then(() => new Promise(()=>{}))，
     `返回【pending】状态的promise继续终止链式调用；
     
 7. Promise.all 与Promise.allSellted;
@@ -1557,7 +1557,7 @@ for (var x of a) {
 
 1. async / await是promise的语法糖，所以async函数`也返回Promise`；
 2. async内部第一个await【`await后表达式是Promise才行，若后是同步代码，则依然同步执行`】之前的代码都是同步的【跟class很像-constructor和原型上方法都写在class里】；
-2. await的promise状态没有变化，还是【pending】，则`不再执行await之后代码 `-- promise中第六条；
+2. await的`promise状态没有变化`，还是【pending】，则`不再执行await之后代码 `-- promise中第六条；
 3. await得到的是promise成功【resolve】的结果；
 4. await`没法得到【reject】结果`，await会把异常抛出，此时需要在await外 `套try/catch`，通过catch捕获异常【reject的reson】；
 5. 若await后表达式的值不是Promise，则`返回该值本身`，且`该行代码是同步运行的`；
@@ -1793,11 +1793,11 @@ function downHeGoes(event) {
 
 ## 前端安全
 
-### xss类型
+### XSS类型
 
 ![image-20220225150327119](D:\Sync\typora图片\image-20220225150327119.png)
 
-#### XSS防范
+### XSS防范
 
 1. 对输入过滤
 
@@ -1805,19 +1805,16 @@ function downHeGoes(event) {
 
 3. Cookie设置为http-only【设置后JavaScript拿不到cookie】
 
-4. 总之，后端不能相信前端的任何输入；
+4. 总之，后端不能相信前端的任何输入
 
-   
 
-### CSRF
-
-#### get 
+### CSRF get 
 
 在【黑客网站】中的img、script【等没有跨域限制】上附上要伪造的地址，诱导用户点击黑客网站，点击后触发【请求】，浏览器自动携带cookie；
 
 
 
-#### post
+### CSRF post
 
 在【黑客网站】中内嵌【iframe】，iframe内又【post】表单，在script内获取iframe表单，执行【submit】操作。
 
@@ -1884,89 +1881,8 @@ https://juejin.cn/post/6844903582672650253?share_token=b88a5ced-ac23-40fb-b4f7-d
 >
 > 6.创建或者删除
 
-## 性能优化
-
-前端性能优化主要可以从这个三个大点入手：
-
-### 一、更快的网络通信
-
-#### 服务器通信层面
-
-- CDN
-  - 全局负载均衡
-  - 缓存系统
-- 减少请求次数
-  - 资源合并
-
-#### 数据传输层面
-
-- 缓存：浏览器缓存
-  - 强缓存
-    - cache-contorl: max-age=30
-    - expires: Wed, 21 Oct 2021 07:28:00 GMT
-- 协商缓存
-  - etag
-  - last-modified
-  - if-modified-since
-  - if-none-match
-- 压缩
-  - 数据压缩：gzip
-  - 代码文件压缩：HTML/CSS/JS 中的注释、空格、长变量等
-  - 静态资源：字体图标，去除元数据，缩小尺寸以及分辨率
-  - 头与报文
-    - http1.1 中减少不必要的头
-    - 减少 cookie 数据量
-
-#### 代码层面
-
-- webpack 打包层面
-  - 样式抽离
-  - js 压缩
-  - 图片压缩
-  - 使用 iconfont 矢量图
-  - 引入 dll 动态链接库文件，前置打包不经常改动的资源包，例如：vue / vuex/ vue-router / ant-design 等
-  - 多入口打包
-- 技术层面
-  - 前端路由懒加载
-  - 数据懒加载
-  - 虚拟列表
-
-### 二、更高效的数据处理
-
-- Http2
-  - 头部压缩：专门的 HPACK 压缩算法
-    - 索引表：客户端和服务器共同维护的一张表，表的内容分为 61 位的静态表（保存常用信息，例如：host/content-type）和动态表
-    - 霍夫曼编码
-- 链路复用
-  - Http1 建立起 Tcp 连接，发送请求之后，服务器在处理请求的等待期间，这个期间又没有数据去发送，称为空挡期。链接断开是在服务器响应回溯之后
-    - keep-alive 链接保持一段时间
-    - HTTP2 可以利用空档期
-    - 不需要再重复建立链接
-- 二进制帧
-  - Http1.1 文本字符分割的数据流，解析慢且容易出错
-  - 二进制帧：帧长度、帧类型、帧标识
-
-补充：采用 Http2 之后，可以减少资源合并的操作，因为首部压缩已经减少了**多请求**传输的数据量
-
-### 三、框架的选择
-
-- SSR 服务器端渲染
-  - Nuxt.js
-  - Next.js
-- SPA 单页面应用
-- SSG 静态站点生成方案
-
-面试参考答案:
-
-- web 类型应用的优化方法有很多，但是大体分两类
-- 从**加载层面**，我们可以...
-- 从**执行层面**，我们可以使用...
 
 
-作者：我是970
-链接：https://juejin.cn/post/6979172700254109709
-来源：稀土掘金
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 ## placeholder
 

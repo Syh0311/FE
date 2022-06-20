@@ -207,17 +207,10 @@ function nativeBind(fn, ctx) {
 var bind = Function.prototype.bind ? nativeBind : polyfillBind;
 
 /**
- */
-
-/**
- * Convert an Array-like object to a real Array.将类数组转为真数组
- * @param {ArrayLike} list 类数组 类数组有length属性
- * @param {number} start 类数组的开始位置
- * @returns {array} 转换后的真数组
+ * Convert an Array-like object to a real Array.
  */
 function toArray(list, start) {
   start = start || 0;
-  // 类数组有 length属性
   var i = list.length - start;
   var ret = new Array(i);
   while (i--) {
@@ -2408,7 +2401,8 @@ function normalizeScopedSlot(normalSlots, key, fn) {
         ? [res] // single vnode
         : normalizeChildren(res);
     var vnode = res && res[0];
-    return res && (!vnode || (res.length === 1 && vnode.isComment && !isAsyncPlaceholder(vnode))) // #9658, #10391
+    return res &&
+      (!vnode || (res.length === 1 && vnode.isComment && !isAsyncPlaceholder(vnode))) // #9658, #10391
       ? undefined
       : res;
   };
@@ -2991,22 +2985,7 @@ function createComponent(Ctor, data, context, children, tag) {
 
   // return a placeholder vnode
   var name = Ctor.options.name || tag;
-  var vnode = new VNode(
-    "vue-component-" + Ctor.cid + (name ? "-" + name : ""),
-    data,
-    undefined,
-    undefined,
-    undefined,
-    context,
-    {
-      Ctor: Ctor,
-      propsData: propsData,
-      listeners: listeners,
-      tag: tag,
-      children: children,
-    },
-    asyncFactory
-  );
+  var vnode = new VNode("vue-component-" + Ctor.cid + (name ? "-" + name : ""), data, undefined, undefined, undefined, context, { Ctor: Ctor, propsData: propsData, listeners: listeners, tag: tag, children: children }, asyncFactory);
 
   return vnode;
 }
@@ -3318,12 +3297,7 @@ function ensureCtor(comp, base) {
 function createAsyncPlaceholder(factory, data, context, children, tag) {
   var node = createEmptyVNode();
   node.asyncFactory = factory;
-  node.asyncMeta = {
-    data: data,
-    context: context,
-    children: children,
-    tag: tag,
-  };
+  node.asyncMeta = { data: data, context: context, children: children, tag: tag };
   return node;
 }
 
@@ -3494,26 +3468,15 @@ function updateComponentListeners(vm, listeners, oldListeners) {
   target = undefined;
 }
 
-/**
-  1. 发布订阅者模式是一个事件中心调度模式，订阅者和发布者是没有直接关联的，通过调度中心进行关联，二者是【解耦的】。
-  2. 观察者模式中观察者和被观察者是关联在一起的，耦合在一起。
-
-  发布-订阅模式 包括 发布者、订阅者、发布订阅中心，发布订阅中心为重点；
-  订阅者(Subscriber)把自己想订阅的事件注册到调度中心，当发布者(Publisher)发布该事件到调度中心，由【调度中心】统一调度订阅者注册到调度中心的处理代码。
- */
 function eventsMixin(Vue) {
   var hookRE = /^hook:/;
-
-  // 先on了 才能emit
-  // 订阅者订阅事件，将回调函数注册到调度中心【发布订阅中心 vm._events】 当发布者发布该事件到调度中心时，由【调度中心】执行回调
   Vue.prototype.$on = function (event, fn) {
-    var vm = this; // new Vue() 实例 即【调度中心】
+    var vm = this;
     if (Array.isArray(event)) {
       for (var i = 0, l = event.length; i < l; i++) {
-        vm.$on(event[i], fn); // 订阅者注册多个事件到调度中心时 再来调自己
+        vm.$on(event[i], fn);
       }
     } else {
-      // 节省个if 将回调函数注册到调度中心
       (vm._events[event] || (vm._events[event] = [])).push(fn);
       // optimize hook:event cost by using a boolean flag marked at registration
       // instead of a hash lookup
@@ -3524,85 +3487,67 @@ function eventsMixin(Vue) {
     return vm;
   };
 
-  // 订阅者只订阅一次 即执行后删除这个订阅事件
   Vue.prototype.$once = function (event, fn) {
     var vm = this;
     function on() {
-      // 发布者发布【emit】事件后，调用on，on内部将其自身off
       vm.$off(event, on);
       fn.apply(vm, arguments);
     }
     on.fn = fn;
-    vm.$on(event, on); // 为了更严谨的off
+    vm.$on(event, on);
     return vm;
   };
 
-  // 订阅者取消订阅
-  /**
-   * 组件销毁时需要off事件，否则可能导致内存泄漏【不需要的变量还保存在【调度中心-事件总线】内 占据内存】
-   * @param {*} event
-   * @param {*} fn
-   * @returns
-   */
   Vue.prototype.$off = function (event, fn) {
     var vm = this;
-    // 1. all off不传任何参数，取消【调度中心】内所有事件
+    // all
     if (!arguments.length) {
-      vm._events = Object.create(null); // {}
+      vm._events = Object.create(null);
       return vm;
     }
-    // 2. array of events
+    // array of events
     if (Array.isArray(event)) {
       for (var i$1 = 0, l = event.length; i$1 < l; i$1++) {
-        vm.$off(event[i$1], fn); //调用自身 处理单个
+        vm.$off(event[i$1], fn);
       }
       return vm;
     }
-    // 3. specific event 边界情况
+    // specific event
     var cbs = vm._events[event];
-
-    // 3.1 cbs为0
     if (!cbs) {
       return vm;
     }
-
-    // 3.2 没传取消订阅哪个fn 则清空当前事件下所有fn
     if (!fn) {
-      vm._events[event] = null; // 为啥不直接delete？？
+      vm._events[event] = null;
       return vm;
     }
-    // 4. specific handler 边界情况
+    // specific handler
     var cb;
     var i = cbs.length;
     while (i--) {
       cb = cbs[i];
-      // cb.fn === fn 情况即$once
       if (cb === fn || cb.fn === fn) {
         cbs.splice(i, 1);
-        break; // 其实还是删一个
+        break;
       }
     }
     return vm;
   };
 
-  // 发布者发布事件时，由【调度中心】执行cbs
   Vue.prototype.$emit = function (event) {
     var vm = this;
-    // 1. 如果不是生成模式 边界情况判断 先不看
     if (process.env.NODE_ENV !== "production") {
       var lowerCaseEvent = event.toLowerCase();
       if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
         tip('Event "' + lowerCaseEvent + '" is emitted in component ' + formatComponentName(vm) + ' but the handler is registered for "' + event + '". ' + "Note that HTML attributes are case-insensitive and you cannot use " + "v-on to listen to camelCase events when using in-DOM templates. " + 'You should probably use "' + hyphenate(event) + '" instead of "' + event + '".');
       }
     }
-    // 2. 发布者发布事件后，【调度中心】执行cbs
-    var cbs = vm._events[event]; //需要先
+    var cbs = vm._events[event];
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs;
       var args = toArray(arguments, 1);
       var info = 'event handler for "' + event + '"';
       for (var i = 0, l = cbs.length; i < l; i++) {
-        // 带错误处理的invoke 【执行回调函数】
         invokeWithErrorHandling(cbs[i], vm, args, vm, info);
       }
     }
@@ -8770,9 +8715,7 @@ function parseHTML(html, options) {
     if (html === last) {
       options.chars && options.chars(html);
       if (process.env.NODE_ENV !== "production" && !stack.length && options.warn) {
-        options.warn('Mal-formatted tag at end of template: "' + html + '"', {
-          start: index + html.length,
-        });
+        options.warn('Mal-formatted tag at end of template: "' + html + '"', { start: index + html.length });
       }
       break;
     }
@@ -8843,13 +8786,7 @@ function parseHTML(html, options) {
     }
 
     if (!unary) {
-      stack.push({
-        tag: tagName,
-        lowerCasedTag: tagName.toLowerCase(),
-        attrs: attrs,
-        start: match.start,
-        end: match.end,
-      });
+      stack.push({ tag: tagName, lowerCasedTag: tagName.toLowerCase(), attrs: attrs, start: match.start, end: match.end });
       lastTag = tagName;
     }
 
@@ -8884,10 +8821,7 @@ function parseHTML(html, options) {
       // Close all the open elements, up the stack
       for (var i = stack.length - 1; i >= pos; i--) {
         if (process.env.NODE_ENV !== "production" && (i > pos || !tagName) && options.warn) {
-          options.warn("tag <" + stack[i].tag + "> has no matching end tag.", {
-            start: stack[i].start,
-            end: stack[i].end,
-          });
+          options.warn("tag <" + stack[i].tag + "> has no matching end tag.", { start: stack[i].start, end: stack[i].end });
         }
         if (options.end) {
           options.end(stack[i].tag, start, end);

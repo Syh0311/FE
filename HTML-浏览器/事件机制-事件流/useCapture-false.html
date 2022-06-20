@@ -30,11 +30,11 @@
     const inner = document.querySelector(".inner");
 
     //默认useCapture为false，此时inner-outer
-    outer.addEventListener("click", () => console.log("outer-----false;"), false);
-    inner.addEventListener("click", () => console.log("inner-----false;"), false);
+    outer.addEventListener("click", (e) => console.log("outer-----false;",e.currentTarget), false);
+    inner.addEventListener("click", (e) => console.log("inner-----false;",e.currentTarget), false);
 
     //useCapture为true，则outer-inner
-    outer.addEventListener("click", () => console.log("outer-----true;"), true);
-    inner.addEventListener("click", () => console.log("inner-----true;"), true);
+    outer.addEventListener("click", () => console.log("outer-----true;",e.currentTarget), true);
+    inner.addEventListener("click", () => console.log("inner-----true;",e.currentTarget), true);
   </script>
 </html>

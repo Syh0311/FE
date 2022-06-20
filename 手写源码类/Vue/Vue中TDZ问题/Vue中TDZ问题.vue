@@ -11,6 +11,7 @@ export default {
   methods: {
     test() {
       "use strict";
+      debugger
       console.log(scope);    //undefined
       let scope = "local";
       console.log(scope);    //"local"
