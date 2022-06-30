@@ -21,11 +21,15 @@
     5. 普通的 Array Object
       - 1. 以Symbol()作为键的情况 【Reflex.ownKeys】
       - 2. 循环引用检查
-    6. 函数类型
+    6. 特殊的对象
+      - Promise实例
+      - Promise.resolve()
+      - 返回p.then()即可
+    7. 函数类型
       - new Function(`return ${obj.toString()}`)();
       - eval(`(${fn.toString()})`); //需要加括号
       - 涉及到curry化，this，闭包等问题，无法克隆相等价值的函数
-    7. 奇特的Object(Symbol('syh')) 平时应该用不到
+    8. 奇特的Object(Symbol('syh')) 平时应该用不到
       - Object(Symbol('syh')).constructor===Symbol
       - return Object(Symbol(obj.description))
 */
@@ -75,13 +79,16 @@ const target = {
     },
   },
 
-  // 6. function
+  // 6. 特殊的对象 Promise实例
+  p: new Promise(() => {}),
+
+  // 7. function
   func: function () {
     console.log("普通函数");
   },
   arrowFunc: () => console.log("箭头函数"),
 
-  // 7. 奇特的Object(Symblo('syh'))
+  // 8. 奇特的Object(Symblo('syh'))
   symbolObj: Object(Symbol("syh")),
 
   // 二. Symbol(key)类型的 属性名【键】

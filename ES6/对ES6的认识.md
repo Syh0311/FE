@@ -8,10 +8,10 @@
 - bigInt
 - symbol
 
-### 二、原有API扩展
+### 二、原有 API 扩展
 
-- Array方面
-- Object方面
+- Array 方面
+- Object 方面
 
 ### 三、新增数据结构
 
@@ -31,12 +31,13 @@
 - 解构赋值
 - 箭头函数
 - 模块化 - ESM
+- for...of 【关联遍历/迭代方法
 
-### 六、其他 
+### 六、其他
 
 - Proxy
 - Reflect
-- Generator 
+- Generator
 
 ## 参考
 
