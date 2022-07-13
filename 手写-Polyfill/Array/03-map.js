@@ -1,15 +1,20 @@
-function syhMap(callback, thisArg) {
-  if (callback instanceof Function) {
-    thisArg = thisArg || this;
+/**
+map特点：
+  1. cb(val,index,arr)
+  2. 返回新数组
+*/
 
-    const newArr = new Array(thisArg.length);
-    // console.log(newArr);
+Array.prototype.myMap = function (cb) {
+  if (!(cb instanceof Function)) throw "传入参数不是函数";
 
-    for (let i = 0; i < thisArg.length; i++) {
-      newArr[i] = callback(thisArg[i], i, thisArg);
-    }
-    return newArr;
-  } else {
-    throw new Error(`"${callback}"不是回调函数！！`);
+  const newArr = [...this];
+  const len = newArr.length;
+  for (let i = 0; i < len; i++) {
+    newArr[i] = cb(newArr[i], i, newArr);
   }
-}
+  return newArr;
+};
+
+const arr = [1, 2, 3];
+const na = arr.myMap((el) => el * 2);
+console.log("[ na ]", na);

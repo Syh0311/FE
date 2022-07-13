@@ -1,7 +1,5 @@
 function myCreate(proto) {
-  if (typeof proto != "object" || typeof proto == null) {
-    throw `${proto} must be object`;
-  }
+  if (typeof proto != "object" || typeof proto == null) throw `${proto} must be object`;
 
   function F() {}
   F.prototype = proto;

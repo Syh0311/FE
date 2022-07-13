@@ -1,42 +1,26 @@
-function syhReduce(callback, initial) {
-  if (callback instanceof Function) {
-    if (initial) {
-      let result = initial;
-      for (let i = 0; i < this.length; i++) {
-        result = callback(result, this[i], i, this);
-      }
-      return result;
-    } else {
-      let result = this[0];
-      for (let i = 1; i < this.length; i++) {
-        result = callback(result, this[i], i, this);
-      }
-      return result;
-    }
+Array.prototype.myReduce = function (cb, initial) {
+  // 1.
+  if (!(cb instanceof Function)) throw "传入第一个参数应为函数";
+  // 2.
+  const arr = this,
+    len = arr.length;
+  let startIndex, result;
+
+  // 初始化变量，之后用一个for循环即可
+  if (initial) {
+    startIndex = 0;
+    result = initial;
   } else {
-    throw new Error(`"${callback}"不是回调函数！！`);
-  }
-}
-
-Array.prototype.reduce = function (callback, init) {
-  if (typeof callback != "function") {
-    throw new Error("传入参数不是函数--");
-  }
-
-  const arr = this;
-  let result;
-
-  if (init) {
-    result = init;
-    for (let i = 0; i < arr.length; i++) {
-      result = callback(result, arr[i], arr);
-    }
-  } else {
+    startIndex = 1;
     result = arr[0];
-    for (let i = 1; i < arr.length; i++) {
-      result = callback(result, arr[i], arr);
-    }
   }
 
+  for (let i = startIndex; i < len; i++) {
+    result = cb(result, arr[i], arr);
+  }
   return result;
 };
+
+const arr = [1, 2, 3];
+const result = arr.myReduce((pre, cur, arr) => pre * cur, 10);
+console.log("[ result ]", result);

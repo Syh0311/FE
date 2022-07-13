@@ -9,16 +9,18 @@
   1. 判断fn是否为函数，且不能为箭头函数【fn.name】；
   2. 创建新对象并指派原型时更优雅的做法【Object.create()】;
   3. 执行构造函数内函数【call/apply】；
-  4. 返回什么，函数本身有非空对象的返回值，则使用该返回值；
+  4. 返回值：函数本身有非空对象的返回值，则使用该返回值；
 
   箭头函数不能作为构造函数的原因：
   1. this指向问题；
   2. 没prototype undefined；
  */
 function myNew(fn, ...args) {
+  // 1. 边界情况，传入非函数或者时箭头函数
   if (typeof fn != "function" || fn.prototype == undefined) {
     throw new Error(`${fn} is not a function or ${fn.name} is an arrow function`);
   }
+
   const obj = Object.create(fn.prototype);
   const res = fn.call(obj, ...args);
   return res || obj;
@@ -31,9 +33,12 @@ function testFn(name) {
 const arrowFn = (name) => {
   this.name = name;
 };
-const myObj = myNew(testFn, "syh");
-console.log(myObj);
-console.log(myObj instanceof testFn); //true
+// 1. 普通函数
+const obj = myNew(testFn, "syh");
+console.log(obj);
+console.log(obj instanceof testFn); //true
+
+// 2. 箭头函数
 try {
   myNew(arrowFn, "sy");
 } catch (err) {

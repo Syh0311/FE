@@ -1,4 +1,5 @@
 // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/any
+import { ajax1, ajax2, ajax3, ajax4 } from "./00-baseData.mjs";
 
 function myAny(arr) {
   //1. 如果是空，返回reject
@@ -39,39 +40,3 @@ myAny([Promise.reject(1), Promise.reject(2)])
 //   console.log(e.name); // "AggregateError"
 //   console.log(e.errors); // [ Error: "some error" ]
 // });
-
-function time(delay) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, delay);
-  });
-}
-function ajax1() {
-  return time(2000).then(() => {
-    console.log(1);
-    return 1;
-  });
-}
-// ajax1().then((res) => {
-//   console.log(res);
-// });
-function ajax2() {
-  return time(1000).then(() => {
-    console.log(2);
-    return 2;
-  });
-}
-async function ajax3() {
-  await time(1000);
-  console.log(3);
-  return 3;
-}
-
-function ajax4() {
-  return time(1000).then(() => {
-    console.log(4);
-    // return 4;
-    throw "ajax4抛出的异常---";
-  });
-}
