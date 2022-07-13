@@ -1,3 +1,5 @@
+import { swap, arr2Str, arr } from "./00-baseUtils.mjs";
+
 function merge(leftArr, rightArr) {
   console.log(leftArr, rightArr);
   const arr = [];
@@ -31,5 +33,5 @@ function mergeSort(arr) {
   return res;
 }
 
-var arr = mergeSort([32, 12, 56, 78, 76, 45, 36]);
-// console.log(arr); // [12, 32, 36, 45, 56, 76, 78]
+mergeSort(arr);
+arr2Str(arr);

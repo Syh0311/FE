@@ -1,9 +1,4 @@
-// 交换两个节点
-function swap(A, i, j) {
-  let temp = A[i];
-  A[i] = A[j];
-  A[j] = temp;
-}
+import { swap, arr2Str, arr } from "./00-baseUtils.mjs";
 
 // 将 i 结点以下的堆整理为大顶堆，注意这一步实现的基础实际上是：
 // 假设 结点 i 以下的子堆已经是一个大顶堆，shiftDown函数实现的
@@ -43,6 +38,5 @@ function heapSort(A) {
   }
 }
 
-let Arr = [4, 6, 8, 5, 9, 1, 2, 5, 3, 2];
-heapSort(Arr);
-console.log(Arr);
+heapSort(arr); //O(nlog(n))  常用
+arr2Str(arr);

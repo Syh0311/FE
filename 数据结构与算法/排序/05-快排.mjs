@@ -1,4 +1,6 @@
-var quickSort = function (arr) {
+import { swap, arr2Str, arr } from "./00-baseUtils.mjs";
+
+function quickSort(arr) {
   if (arr.length <= 1) {
     return arr;
   }
@@ -16,4 +18,7 @@ var quickSort = function (arr) {
   }
 
   return quickSort(left).concat([pivot], quickSort(right));
-};
+}
+
+quickSort(arr);
+arr2Str(arr);
