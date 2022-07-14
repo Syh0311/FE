@@ -4,11 +4,10 @@
   1. then方法返回promise对象
   2. thenable：如果 x 有 then 方法且看上去像一个 Promise ，解决程序即尝试使 promise 接受 x 的状态；否则其用 x 的值来执行 promise 。
 
-then规范总结：
-  1. then方法本身会返回一个新的Promise对象，返回一个新的Promise以后它就有自己的then方法，这样就能实现无限的链式
-  2. 不论 promise1 被 resolve()  还是被 reject() 时 promise2 都会执行 Promise 解决过程：[[Resolve]](promise2, x)
-
-  - 此处把这个 Promise 解决过程：命名为 resolvePromise(promise2, x, resolve, reject)函数
+then(onFulfilled,onRejected)接收的两个参数都是用户自己写的，所以需要：
+  1. 参数检验；
+  2. resolvePromise中判断 promise2 === x；
+     x是onFulFilled(value)或onRejected(reason)的结果
 
 三个部分均参考：
   - https://juejin.cn/post/7043758954496655397
@@ -70,46 +69,34 @@ class MyPromise {
     // 2. 判断实例当前状态【1.未改变 2. 已改变】
     //    将此部分包裹在新的promise内 用以返回
     const promise2 = new MyPromise((resolve, reject) => {
+      const caseFulFilled = () => {
+        try {
+          const x = onFulfilled(this.PromiseResult);
+          resolvePromise(promise2, x, resolve, reject);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      const caseRejected = () => {
+        try {
+          const x = onRejected(this.PromiseResult);
+          resolvePromise(promise2, x, resolve, reject);
+        } catch (err) {
+          reject(err);
+        }
+      };
       if (this.PromiseState === MyPromise.PENDING) {
         // this.onFulfilledCallbacks.push(onFulfilled);// 原
         // this.onRejectedCallbacks.push(onRejected);// 原
         // 换成推入带一系列处理的回调
-        this.onFulfilledCallbacks.push(() => {
-          try {
-            const x = onFulfilled(this.PromiseResult);
-            resolvePromise(promise2, x, resolve, reject);
-          } catch (err) {
-            reject(err);
-          }
-        });
-        this.onRejectedCallbacks.push(() => {
-          try {
-            const x = onRejected(this.PromiseResult);
-            resolvePromise(promise2, x, resolve, reject);
-          } catch (err) {
-            reject(err);
-          }
-        });
+        this.onFulfilledCallbacks.push(caseFulFilled);
+        this.onRejectedCallbacks.push(caseRejected);
       } else if (this.PromiseState === MyPromise.FULFILLED) {
         // setTimeout(() => onFulfilled(this.PromiseResult));// 原
-        setTimeout(() => {
-          try {
-            const x = onFulfilled(this.PromiseResult);
-            resolvePromise(promise2, x, resolve, reject);
-          } catch (err) {
-            reject(err);
-          }
-        });
+        setTimeout(caseFulFilled);
       } else {
         // setTimeout(() => onRejected(this.PromiseResult));// 原
-        setTimeout(() => {
-          try {
-            const x = onRejected(this.PromiseResult);
-            resolvePromise(promise2, x, resolve, reject);
-          } catch (err) {
-            reject(x);
-          }
-        });
+        setTimeout(caseRejected);
       }
     });
 
@@ -122,15 +109,12 @@ class MyPromise {
  * @param  {[type]} x         promise1中【onFulfilled或onRejected】的【返回值】
  * @param  {[type]} resolve   promise2的resolve方法
  * @param  {[type]} reject    promise2的reject方法
- */
-function resolvePromise(promise2, x, resolve, reject) {
-  // 1. promise2 === x 循环了，抛错
-  if (promise2 === x) return reject(new TypeError("Chaining cycle detected for promise"));
-
-  /**
-  除循环引用外的正常情况
-
-  一、x为promise类型；
+ * 
+不同情况：
+  【零】、循环引用
+    - promise2 === x，抛出typeError
+  
+  一、x为promise实例 --> 写的时候可忽略，因为包含在二中，因为【x为promise实例】情况本身就是【带有then属性的对象】这一情况的分支】
     此时promise2接收x的状态，x状态分三种情况：
     1. pending    --> 较难理解
       - 此时promise2保持为pending直至x状态改变！！
@@ -158,20 +142,24 @@ function resolvePromise(promise2, x, resolve, reject) {
 
   三、其他情况
     - 直接以x为参数执行promise --> resolve(x)
-  */
-  if (x instanceof MyPromise) {
-    // 一、x为promise类型
-    if (x.PromiseState === MyPromise.PENDING) {
-      // x处于pending状态，则promise2保持等待状态直至x状态改变！！
-      x.then((value) => {
-        resolvePromise(promise2, value, resolve, reject);
-      }, reject);
-    } else if (x.PromiseState === MyPromise.FULFILLED) {
-      resolve(x.PromiseResult);
-    } else {
-      reject(x.PromiseResult);
-    }
-  } else if ((x != null && typeof x === "object") || typeof x === "function") {
+ */
+function resolvePromise(promise2, x, resolve, reject) {
+  // 零. promise2 === x 循环了，抛错
+  if (promise2 === x) return reject(new TypeError("Chaining cycle detected for promise"));
+  // 一、x为promise类型 【合并到二中】
+  // if (x instanceof MyPromise) {
+  //   if (x.PromiseState === MyPromise.PENDING) {
+  //     // x处于pending状态，则promise2保持等待状态直至x状态改变！！
+  //     x.then((value) => {
+  //       resolvePromise(promise2, value, resolve, reject);
+  //     }, reject);
+  //   } else if (x.PromiseState === MyPromise.FULFILLED) {
+  //     resolve(x.PromiseResult);
+  //   } else {
+  //     reject(x.PromiseResult);
+  //   }
+  // } else
+  if ((x != null && typeof x === "object") || typeof x === "function") {
     // 二、x为对象或者函数
     // 1. 取出then
     let then;
