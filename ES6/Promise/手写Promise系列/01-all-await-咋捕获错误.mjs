@@ -12,9 +12,9 @@ function myAll(arr) {
         data[i] = await arr[i];
         if (++count === len) resolve(data);
       }
-    } catch (reson) {
-      console.log("[ reson ]", reson);
-      reject(reson);
+    } catch (reason) {
+      console.log("[ reason ]", reason);
+      reject(reason);
     }
   });
 

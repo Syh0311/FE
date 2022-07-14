@@ -9,7 +9,7 @@ import { ajax1, ajax2, ajax3, ajax4 } from "./00-baseData.mjs";
     - new AggregateError(errors,message)
   3. 只要有一个成功就成功，
     - 全部错了则reject出 AggregateError类型错误，
-    - 错误内容为所有reson;
+    - 错误内容为所有reason;
   4. 非promise类型包装为promise类型
 */
 function myAny(arr) {
@@ -19,15 +19,15 @@ function myAny(arr) {
   // 2. arr长度为0
   return new Promise((resolve, reject) => {
     const len = arr.length;
-    const resons = Array(len);
+    const reasons = Array(len);
     let count = 0;
 
     for (let i = 0; i < len; i++) {
       Promise.resolve(arr[i])
         .then((value) => resolve(value))
-        .catch((reson) => {
-          resons[i] = reson;
-          ++count === len && reject(new AggregateError(resons, "All Promises were rejected"));
+        .catch((reason) => {
+          reasons[i] = reason;
+          ++count === len && reject(new AggregateError(reasons, "All Promises were rejected"));
         });
     }
   });

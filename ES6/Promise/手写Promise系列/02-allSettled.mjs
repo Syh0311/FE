@@ -24,8 +24,8 @@ function allSettled(arr) {
           result[i] = { status: "fullfilled", value };
           ++count === len && resolve(result);
         })
-        .catch((reson) => {
-          result[i] = { status: "reject", reson };
+        .catch((reason) => {
+          result[i] = { status: "reject", reason };
           if (++count === len) resolve(result);
         });
     }

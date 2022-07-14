@@ -55,7 +55,7 @@ const compileUtil = {
   },
 
   text(node, expr, vm) {
-    //两种情况 <div v-text='preson.name'></div>     {{person.name}}
+    //两种情况 <div v-text='preason.name'></div>     {{person.name}}
     let value;
     if (expr.indexOf("{{") !== -1) {
       value = expr.replace(/\{\{(.+?)\}\}/g, (...args) => {

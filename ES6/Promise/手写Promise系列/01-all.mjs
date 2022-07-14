@@ -27,7 +27,7 @@ function myAll(arr) {
           result[i] = value;
           if (++count === len) resolve(result);
         })
-        .catch((reson) => reject(reson));
+        .catch((reason) => reject(reason));
     }
   });
 }
