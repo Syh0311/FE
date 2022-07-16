@@ -1,4 +1,4 @@
-# [Event Loop](https://cloud.tencent.com/developer/article/1633898)
+# [深入解析EventLoop 和浏览器渲染、帧动画、空闲回调](https://juejin.cn/post/6844904165462769678)
 
 ## 一些问题
 
@@ -161,10 +161,7 @@ setTimeout(() => {
 
 queueMicrotask(() => console.log("mic"))
 queueMicrotask(() => console.log("mic"))
-复制代码
 ```
-
-复制
 
 从直觉上来看，顺序是不是应该是：
 
@@ -176,8 +173,6 @@ rAF
 sto
 rAF
 ```
-
-复制
 
 呢？也就是每一个宏任务之后都紧跟着一次渲染。
 
@@ -191,8 +186,6 @@ sto
 rAF
 rAF
 ```
-
-复制
 
 ## requestIdleCallback
 
@@ -216,13 +209,13 @@ React 的`时间分片渲染`就想要用到这个 API，不过目前浏览器�
 
 首先看一张图，很精确的描述了这个 API 的意图：
 
-![img](https://ask.qcloudimg.com/http-save/yehe-6282273/xivf4xc80w.png?imageView2/2/w/1620)
+![img](D:\Sync\typora图片\1620-16579605257847.png)
 
 当然，这种有序的 `浏览器 -> 用户 -> 浏览器 -> 用户` 的调度基于一个前提，就是我们要把任务切分成比较小的片，不能说浏览器把空闲时间让给你了，你去执行一个耗时 `10s` 的任务，那肯定也会把浏览器给阻塞住的。这就要求我们去读取 `rIC` 提供给你的 `deadline` 里的时间，去动态的安排我们切分的小任务。浏览器信任了你，你也不能辜负它呀。
 
 #### 渲染长期空闲
 
-![img](https://ask.qcloudimg.com/http-save/yehe-6282273/wpp9p5hii5.png?imageView2/2/w/1620)
+![img](D:\Sync\typora图片\1620.png)
 
  还有一种情况，也有可能在几帧的时间内浏览器都是空闲的，并没有发生任何影响视图的操作，它也就不需要去绘制页面： 这种情况下为什么还是会有 `50ms` 的 `deadline` 呢？是因为浏览器为了提前应对一些可能会突发的用户交互操作，比如用户输入文字。如果给的时间太长了，你的任务把主线程卡住了，那么用户的交互就得不到回应了。50ms 可以确保用户在无感知的延迟下得到回应。
 
@@ -244,11 +237,11 @@ MDN 文档中的[幕后任务协作调度 API ](https://developer.mozilla.org/zh
 
 如果我鼠标不做任何动作和交互，直接在控制台通过 `rIC` 去打印这次空闲任务的剩余时间，一般都稳定维持在 `49.xx` ms，因为此时浏览器没有什么优先级更高的任务要去处理。
 
-![img](https://ask.qcloudimg.com/http-save/yehe-6282273/udl2d5smto.gif)
+![img](D:\Sync\typora图片\udl2d5smto.gif)
 
 而如果我不停的滚动浏览器，不断的触发浏览器的重新绘制的话，这个时间就变的非常不稳定了。
 
-![img](https://ask.qcloudimg.com/http-save/yehe-6282273/8sijprfhe2.gif)
+![img](D:\Sync\typora图片\8sijprfhe2.gif)
 
 通过这个例子，你可以更加有体感的感受到什么样叫做「繁忙」，什么样叫做「空闲」。
 
@@ -303,7 +296,7 @@ MDN 文档中的[幕后任务协作调度 API ](https://developer.mozilla.org/zh
 
 注意在最后我加了一个 `requestIdleCallback` 的函数，回调里会 `alert('rIC')`，来看一下演示效果：
 
-![img](https://ask.qcloudimg.com/http-save/yehe-6282273/9ana124sx2.gif)
+![img](D:\Sync\typora图片\9ana124sx2.gif)
 
 `alert` 在最开始的时候就执行了，为什么会这样呢一下，想一下「空闲」的概念，我们每一帧仅仅是把 `left` 的值移动了一下，做了这一个简单的渲染，没有占满空闲时间，所以可能在最开始的时候，浏览器就找到机会去调用 `rIC` 的回调函数了。
 
@@ -330,7 +323,7 @@ function step(timestamp) {
 
 再来看一下它的表现：
 
-![img](https://ask.qcloudimg.com/http-save/yehe-6282273/xjoroenry4.gif)
+![img](D:\Sync\typora图片\xjoroenry4.gif)
 
 其实和我们预期的一样，由于浏览器的每一帧都"太忙了",导致它真的就无视我们的 `rIC` 函数了。
 
@@ -346,7 +339,7 @@ window.requestIdleCallback(
 )
 ```
 
-![img](https://ask.qcloudimg.com/http-save/yehe-6282273/dct3msubsp.gif)
+![img](D:\Sync\typora图片\dct3msubsp.gif)
 
 浏览器会在大概 `500ms` 的时候，不管有多忙，都去强制执行 `rIC` 函数，这个机制可以防止我们的空闲任务被“饿死”。
 
@@ -362,7 +355,7 @@ window.requestIdleCallback(
 
 另外，本文也是对于规范的解读，规范里的一些术语比较晦涩难懂，所以我也结合了一些自己的理解去写这篇文章，如果有错误的地方欢迎各位小伙伴指出。
 
-## 参考资料
+## 参考资料-文章里的
 
 [HTML 规范文档](https://html.spec.whatwg.org/multipage/webappapis.html#task-queue)
 
@@ -370,109 +363,3 @@ window.requestIdleCallback(
 
 [Vue 源码详解之 nextTick：MutationObserver 只是浮云，microtask 才是核心！](https://segmentfault.com/a/1190000008589736)（强烈推荐这篇文章）
 
-# rAF实现interval
-
-[使用 requestAnimationFrame 实现定时器，解决 setInterval 执行次数丢失问题 ](https://www.cnblogs.com/whosmeya/p/14135507.html)
-
-### setInterval 丢失
-
-来看这样一个场景：使用 setInterval 定时器倒计时，突然来了一个长达三秒的任务，定时器会有一次不准，两次丢失回调，导致少两次计算时间。
-
-```js
-// 在控制台上输入下面四行
-var second = 0
-setInterval(function() {
-  console.log(`setInterval ${++second}`, new Date().getTime())
-}, 1000)
-
-// 几秒之后输入下面代码
-function sleep(ms) {
-  const end = new Date().getTime() + ms
-  console.log('sleep start')
-  while (new Date().getTime() < end) {}
-  console.log('sleep end')
-}
-sleep(3000)
-```
-
-![img](https://img2020.cnblogs.com/blog/1141466/202012/1141466-20201214200707796-1727771621.png)
-
-如图所示，少两次回调的执行。
-
-
-
-### rAF 实现setInterval 
-
-requestAnimationFrame 传入一个回调函数，该回调函数会在浏览器下一次重绘之前执行，详情查看MDN文档 [window.requestAnimationFrame](https://developer.mozilla.org/zh-CN/docs/Web/API/window/requestAnimationFrame)
-
-```js
-/**
- * 设置精度定时器
- * @param {function} 回调函数
- * @param {number}   延迟时间
- * @return {number}  定时器ID
- */
-function setIntervalPrecision(callback, delay) {
-  // 生成并记录定时器ID
-  let obj = window.interValPrecisionObj || (window.interValPrecisionObj = { num: 0 })
-  obj.num++
-  obj['n' + obj.num] = true
-  var intervalId = obj.num
-  // 开始时间
-  var startTime = +new Date()
-  // 已执行次数
-  var count = 0
-  // 延迟时间
-  delay = delay || 0
-
-
-  ;(function loop() {
-    // 定时器被清除，则终止
-    if (!obj['n' + intervalId]) return
-
-    // 满足条件执行回调
-    if (+new Date() > startTime + delay * (count + 1)) {
-      count++
-      callback(count)
-    }
-
-    requestAnimationFrame(loop)
-  })()
-
-  return intervalId
-}
-
-/**
- * 清除精度定时器
- * @param {number} 定时器ID
- */
-function clearIntervalPrecision(intervalId) {
-  if (window.interValPrecisionObj) {
-    delete window.interValPrecisionObj['n' + intervalId]
-  }
-}
-```
-
-
-
-### 测试
-
-```js
-// 在控制台上输入下面四行
-setIntervalPrecision(function(val) {
-  console.log(`setIntervalPrecision ${val}`, new Date().getTime())
-}, 1000)
-
-// 几秒之后输入下面代码
-function sleep(ms) {
-  const end = new Date().getTime() + ms
-  console.log('sleep start')
-  while (new Date().getTime() < end) {}
-  console.log('sleep end')
-}
-sleep(3000)
-```
-
-![img](https://img2020.cnblogs.com/blog/1141466/202012/1141466-20201214201551894-312811661.png)
-
-任务阻塞结束后，会瞬间执行阻塞期间需要执行次数的回调，虽然倒计时页面会卡三秒（js特性），但实际剩余秒数不会出错。

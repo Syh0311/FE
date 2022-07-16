@@ -1,0 +1,41 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="./01-RAF版interval-双函数.js"></script>
+    <script src="./02-RAF版interval-class.js"></script>
+    <script src="./03-setTimeout版interval.js"></script>
+    <script>
+      // 测试例子------------
+      let startTime = Date.now();
+      let index = 1;
+      const callback = () => {
+        console.log(index++);
+        // let cur = Date.now();
+        // console.log(cur - startTime);
+        // startTime = cur;
+      };
+
+      // case1 ---- 原版setInterval，离开网页不停止
+      // setInterval离开网页后不会自动停止
+      // setInterval(() => {
+      //   callback();
+      // }, 100);
+
+      // case2 ---- RAF 两个函数版
+      const timerId = mySetInterval(callback, 1000);
+      myClearInterval(timerId.value);
+
+      // case3 ---- RAF class版
+      const myInterval = new RAFInterval(callback, 100);
+      console.log("[ myInterval ]", myInterval);
+      window.xx = myInterval;
+
+      // case3 ---- setTimeout版
+    </script>
+  </body>
+</html>
