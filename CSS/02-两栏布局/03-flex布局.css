@@ -1,0 +1,10 @@
+.outer {
+  display: flex;
+}
+
+.left {
+}
+
+.right {
+  flex: 1;
+}

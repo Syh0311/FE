@@ -1,0 +1,40 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .outer {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 200px;
+        background: aliceblue;
+      }
+
+      .left {
+        width: 100px;
+        height: 100%;
+        background: tomato;
+      }
+      .right {
+        height: 100%;
+        background: #47bbff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <link rel="stylesheet" href="./01-左float+右自适应.css" /> -->
+    <!-- <link rel="stylesheet" href="./02-左float+右BFC.css" /> -->
+    <!-- <link rel="stylesheet" href="./03-flex布局.css" /> -->
+    <link rel="stylesheet" href="./04-左-绝对定位.css" />
+    <!-- <link rel="stylesheet" href="./05-右-绝对定位.css" /> -->
+    <div class="outer">
+      <div class="left"></div>
+      <div class="right"></div>
+    </div>
+  </body>
+</html>
