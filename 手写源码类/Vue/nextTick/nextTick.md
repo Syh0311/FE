@@ -1,44 +1,109 @@
-## [JS 宏任务，微任务，DOM 渲染，requestAnimationFrame 执行顺序比较](https://juejin.cn/post/7084989596034924581)
+## nextTick 涉及到的知识点
 
-## [深入解析 EventLoop 和浏览器渲染、帧动画、空闲回调的关系](https://zhuanlan.zhihu.com/p/142742003)
+1. 更深一次的 EventLoop
+   - UI Render 与微任务、宏任务
+2. Vue 源码解读
+3. 函数包裹执行 -- 代码思路
+4. vue 的异步更新策略
+5. 修改 data 中数据 Vue 做了什么
 
 ## nextTick 前因后果
 
-### 为什么会有 nextTick 这个东西的存在
-
-1. 因为 vue 采用的**异步更新策略**，当监听到数据发生变化的时候不会立即去更新 DOM，
-2. 而是开启一个任务队列，`并缓存在同一事件循环中发生的所有数据变更`;
-3. 这种做法带来的好处就是可以将多次数据更新合并成一次，`减少操作DOM的次数`，
-4. 如果不采用这种方法，假设数据改变 100 次就要去更新 100 次 DOM，而频繁的`DOM更新是很耗性能的`；
-
-### nexTick 的作用
-
-nextTick 接收一个回调函数作为参数，并将这个回调函数`延迟到DOM更新后才执行`；
-**使用场景**：想要操作 `基于最新数据生成的DOM`时，就将这个操作放在 nextTick 的回调中；
-
 ### nextTick 做的两件事
 
-1. 根据不同环境生成不同的 timerFunc，将回调作为`微任务/宏任务`添加到事件循环中
-2. 通过 flushCallbacks 在`合适的时机`执行`callbabcks`队列中的回调
+根据不同环境生成不同的 timerFunc，将回调作为`微任务/宏任务`添加到事件循环中【不是nextTick干的】
+
+1. 修改data中数据后，将 beforeupdate、更新watcher、updated方法放到包裹到 flushSheldurQueue 中放到微任务队列里；
+   - Vue采取的是**异步更新策略**，这样做的原因是`DOM更新非常消耗性能`；
+   - 修改数据是不立即进行DOM更新，将`一次EventLoop中多次数据更改`合并成`一次DOM更新`；
+   - 实现的原理：
+     1. 修改this.name = 'syh!'
+     2. dep.nitify()
+     3. watcher.update()
+     4. queueWatcher(this);   将自身推入队列中
+        - 此处将watcher添加到queue中后，做了标识判断【has{watcher.id}=true】 添加过的watcher不再添加，`此举保证了Vue的多次数据变更 一次DOM更新`
+        - flushSchedulerQueue内有 resetSchedulerState 方法，此方法清空queue，清空标识【has={}】，恢复 flushing
+     5. `nextTick(flushSchedulerQueue)`
+     6. flushSchedulerQueue()  在微任务队列中
+2. 对外暴露 nextTick 方法，支持修改data数据后，异步获取DOM节点真实数据；
+   - 对外暴露的nextTick方法 接收一个回调函数作为参数，并将这个回调函数`延迟到DOM更新后才执行`；
+   - **使用场景**：想要操作 `基于最新数据生成的DOM`时，就将这个操作放在 nextTick 的回调中；
 
 ### nextTick 实现原理
 
-将传入的回调函数包装成异步任务，异步任务又分微任务和宏任务，为了尽快执行所以优先选择微任务；
+`**源码位置** core/util/next-tick`
 
-nextTick 提供了四种异步方法
+主要有`两个变量，三个函数`
 
-1. Promise.resolve().then
-2. MutationObserver
-3. setImmediate
-4. setTimeout(fn,0)
+#### 一、两个变量
 
-**源码位置** core/util/next-tick
+  1. callbacks
+    - 用来保存【包裹(真实回调)和错误处理】的函数；
+  2. pending
+    - 初始化为false，用来将flushCallbacks添加到微任务队列；
 
-简版【没 timerFunc 的其他三种情况】
+#### 二、三个函数之一：flushCallbacks
+
+  - 作用是被nextTIck添加到微任务队列中，等待执行；
+  - 执行此函数 即遍历执行callbacks内所有回调
+  - 需注意：
+    1. callbacks需要复制下，避免nextTick中自调用，又将其添加到callbacks中，callbacks一直增加，循环无法停止；
+    2. 还原pending，为下一次事件循环做准备；
+    3. 还原callbacks  --> callbacks.length = 0
+
+#### 三、三个函数之二：timerFunc
+
+  - 是一个将 flushCallbacks 添加到微任务或者宏任务队列的工具函数
+  - 根据不同代码环境，分四种情况
+      1. Promise.resolve().then(flushCallbacks)
+      2. MutationObserver(flushCallbacks)
+      3. setImmediate(flushCallbacks)
+      4. setTimeout(flushCallbacks,0)
+
+#### 四、三个函数之三：nextTick(cb, ctx)
+
+接收(cb, ctx)两个参数，干了这三件事
+
+  1. 将cb推入callbacks
+     - 此处没有做参数检验，也没有将cb直接推入，而是将一个【包含异常处理 (通过_resolve闭包)】的【待执行函数】 添加到callbacks中；
+     - 此函数包裹cb，执行此函数即执行cb；
+     - 好处是能给cb的执行加写其他情况处理，如手写promise哪的try/catch异常捕获；
+     - 此处的if/else是为了增加未传入参数(cb === undefined)的兜底操作
+  2. 判断pending状态
+     - false(初始值)：
+          1. 修改pending为true；
+          2. 执行timerFunc，将 flushCallbacks 添加到微任务队列，等待执行
+     - true：啥也不干
+  3. 判断是否有cb，
+     - 如果没有则执行将 _resolve赋值为 pending状态下的promise，对未传入参数(cb === undefined)情况进行兜底操作
+     - 这儿直接对cb做参数检验不就行了？？
+
+### nextTick的运行机制
+
+  **第一次调用nextTick时：**
+
+- pending设为true，执行timerFunc，将 flushCallbacks 作为【等待执行的微任务】添加到微任务队列，flushCallbacks执行则 遍历执行callbacks中所有回调
+- 即把执行callbacks中多个cb的权利放到了微任务队列中
+- 注：一般情况下，第一次调用nextTick都是 修改了 data中数据后，如修改了【this.name】
+     1. this.name被修改，触发setter；
+     2. setter触发闭包 dep.notify() 遍历通知所有watcher；
+     3. watcher调用 watcher.update()；
+     4. update内调用queueWatcher(this)；
+     5. queueWatcher(this)内调用nextTick(flushSchedulerQueue)； 【此时第一次调用nextTick】
+     6. flushSchedulerQueue负责视图更新
+
+**第二次调用nextTick时：**
+
+- 前提是在同一次事件循环内；
+- 此时pending为true （同一个事件循环内，微任务flushCallbacks还没执行），所以nextTick只将【包装后，添加闭包-错误处理(cb为undefined)】的【回调函数】添加到callbacks中，等待遍历执行
+
+### 简版nextTick
+
+timerFunc 直接用 Promise.then()
 
 ```js
 const callbacks = [];
-let pending = false; // 标记是否已经向任务队列中添加了一个任务，如果已经添加了就不能再添加了
+let pending = false;
 
 function flushCallbacks() {
   // 1. 为了下一次事件循环 还原pending
@@ -56,30 +121,31 @@ function flushCallbacks() {
   }
 }
 
-//  定义timerFunc
-let timerFunc = Promise.resolve().then(flushCallbacks);
+let timerFunc = () => Promise.resolve().then(flushCallbacks);
+// let timerFunc = () => queueMicrotask(flushCallbacks);
 
-//接受回调函数与对应的this
 export function nextTick(cb, ctx) {
   let _resolve;
-  // 1. callbacks推入的是个执行cb的函数
+
+  // 1. 将回调推入callbacks
   callbacks.push(() => {
     if (cb) {
-      cb.call(ctx);
+      try {
+        cb.call(ctx);
+      } catch (e) {
+        handleError(e, ctx, "nextTick"); // vue中封装的错误处理
+      }
     } else if (_resolve) {
       _resolve(ctx); // _resolve对于这个函数是个闭包
     }
   });
-  // 2. pending默认false，
-  // 2.1 第一次调用nextTick后 pending设为true，执行timerFunc
-  // 2.2 timerFunc执行后将`flushCallbacks`作为微任务添加到微任务队列 等待执行【callbacks队列内的`同步函数`】
-  // 2.3 第二次再调用nextTick 就只将cb推入callbacks队列
-  // 2.4 同步代码和flushCallbacks之前的微任务执行完后 执行flushCallbacks
+  // 2. 判断pending状态
   if (!pending) {
-    pending = true; // 第一次的标识
-    timerFunc(); //内部的微任务flushCallbacks 将pending还原
+    pending = true;
+    timerFunc();
   }
-  // 3. cb为undefined 则赋值_resolve 返回Promise 使其能够正常返回值
+
+  // 3. 推入到 callbacks 的回调的兜底操作
   if (!cb && typeof Promise !== "undefined") {
     return new Promise((resolve) => {
       _resolve = resolve;
@@ -88,7 +154,11 @@ export function nextTick(cb, ctx) {
 }
 ```
 
-### 一些变动
+
+
+### 略过时但能用的图解
+
+**过时的地方：**
 
 1. flushBatcherQueue --> flushSheldurQueue
 2. MutationObserver(flushCallbacks) --> Promise.resolve().then(flushCallbacks)
@@ -97,13 +167,7 @@ export function nextTick(cb, ctx) {
 
 ## nextTick 与修改 data
 
-![image-20220620102801202](D:\Sync\typora图片\image-20220620102801202.png)
-
-### [update](https://ustbhuangyi.github.io/vue-analysis/v2/data-driven/update.html#%E6%80%BB%E7%BB%93)
-
-### [Vue 源码解读（六）：update 和 patch](https://segmentfault.com/a/1190000040715254)
-
-### nextTick 与 update 【上边的 update 与 patch】
+### beforeUpdate 、nextTick、update
 
 1. case1：
    - promise
@@ -122,20 +186,31 @@ export function nextTick(cb, ctx) {
 
 - 这里需要将第 2 点单独说明一下，这些步骤都在微任务队列中，说明是异步执行的任务，因此我们需要区分一点是，当代码改变数据时（如 this.name = ‘xxx’ ），**不会立刻同步执行**虚拟 DOM 更新操作，但是会立刻将更新的微任务全部按顺序插入微任务队列。下面的例子中会重点讲到。
 
-3. **nextTick()** 不讲武德，直接**插队**在 updated() 之后，即在所有更新任务完成后立刻执行。
-   - 插队的实现方式 通过`flushCallbacks`将队列中所有的微任务通过 for 循环一块执行了 然后再执行 cb2，
+3. [**nextTick()** 不讲武德](https://its201.com/article/weixin_51116314/119814816)，直接**插队**在 updated() 之后，即在所有更新任务完成后立刻执行。
+   - 插队的实现方式 修改 data 后就直接在 watcher 里调了 nextTick，通过`flushCallbacks`将队列中所有的微任务通过 for 循环一块执行了 然后再执行 cb2；
    - 即先有了`flushCallbacks`维护的队列，nextTick 内的回调都进了`这个队列内`，没排在 cb2 之后，所以看起来像是插队了
 
 ![image-20220620102814434](D:\Sync\typora图片\image-20220620102814434.png)
 
-### 实例
+### nextTick 插队 demo
 
 ```vue
 <template>
   <div id="app">
-    <button @click="btn++">{{ btn }}</button>
-    <p ref="name">{{ name }}</p>
-    <button @click="click">点击</button>
+    <section>
+      <p>
+        要修改的数据 ==> name：<span ref="name">{{ name }}</span>
+      </p>
+    </section>
+
+    <section>
+      <span>nextTick的插队现象</span>
+      <br /><br />
+      <span>micro1 -> 修改data -> nextTick1 -> micro2 ->nextTick2</span>
+      <br /><br />
+
+      <button @click="btnclick">点我！</button>
+    </section>
   </div>
 </template>
 
@@ -143,7 +218,6 @@ export function nextTick(cb, ctx) {
 export default {
   data() {
     return {
-      btn: 10,
       name: "syh",
     };
   },
@@ -163,68 +237,82 @@ export default {
   },
 
   methods: {
-    click() {
-      const that = this;
-      // Promise1 (对应图中callBack1)
-      new Promise((resolve) => resolve()).then(function promise1Fn() {
-        debugger;
-        console.log("Promise1:" + that.$refs.name.innerHTML);
-      });
-      // 数据改变准备更新 （对应图中第二行代码）
-      that.name = "改变";
-      // 同步打印虚拟dom
-      console.log(that.$refs.name);
-      debugger;
-      // 同步打印dom的文本
-      console.log(that.$refs.name.innerHTML);
-      // Promise2 (对应图中callBack2)
-      new Promise((resolve) => resolve()).then(function promise2Fn() {
-        debugger;
-        console.log("Promise2:" + that.$refs.name.innerHTML);
-      });
-      // nextTick 插队到updated之后 所以早于promise2(对应图中nextTickCallBack)
-      const next1 = that.$nextTick(function next1Fn() {
-        debugger;
-        console.log("nextTickFn1-【插队】到updated后:" + that.$refs.name.innerHTML);
-      });
-      const next2 = that.$nextTick(
-        function next2Fn() {
-          console.log("[ next2Fn ]");
-          // console.log(that);
-        },
-        {
-          name: "syh",
-        }
-      );
-      // const next3 = that
-      //   .$nextTick(undefined, { name: "syh" })
-      //   .then((res) => console.log(res));
-      // console.log(next1);
-      // console.log(next2);
-      // console.log(next3);
-      // 宏任务
-      setTimeout(function macroFn() {
-        debugger;
-        console.log("宏任务：" + that.$refs.name.innerHTML);
-      }, 0);
+    // case1: micro1 -> 修改data -> nextTick1 -> micro2 ->nextTick2
+    btnclick() {
+      // 前置准备 —————————————————————————
+      const nameSpan = this.$refs.name;
+      const microFn1 = () => console.log("micro1:" + nameSpan.innerHTML);
+      const microFn2 = () => console.log("micro2:" + nameSpan.innerHTML);
+
+      const nextFn1 = () => console.log("晚于updated、micro1 早于micro2");
+      const nextFn2 = () => console.log(nameSpan.innerHTML);
+
+      const macroFn = () => console.log("宏任务：" + nameSpan.innerHTML);
+      // ———————————————————————————————————
+
+      // 1. 修改数据前的微任务
+      queueMicrotask(microFn1);
+
+      // 2. 开始修改数据
+      this.name = "改变";
+
+      console.log(nameSpan); // 同步打印虚拟dom
+      console.log(nameSpan.innerHTML); // 同步打印dom的文本
+
+      // 3. 修改数据后的微任务
+      queueMicrotask(microFn2);
+
+      // 4. 开始nextTick 晚于updated、micro1 早于micro2
+      this.$nextTick(nextFn1);
+      this.$nextTick(nextFn2);
+
+      // 5. 宏任务
+      setTimeout(macroFn);
     },
   },
 };
 </script>
 
 <style scoped>
+* {
+  padding: 0;
+  margin: 0;
+}
 #app {
-  width: 100%;
-  height: 100%;
-  margin: 0px;
-  padding: 0px;
-  position: absolute;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  background: beige;
+  width: 60%;
+  height: 60%;
+  border-radius: 5px;
+  box-shadow: 5px 6px 15px gray;
+
+  padding: 20px;
   overflow: hidden;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+#app section {
+  margin: 10px;
+  padding: 10px;
+  border: 2px solid deeppink;
+  border-radius: 10px;
 }
 </style>
 ```
 
 ### this.name 修改之后 Vue 做了些啥
+
+**画个图更好些**
 
 1. 触发 name 的 setter；
 
@@ -232,8 +320,9 @@ export default {
 
 3. watcher 进行更新
 
+   - `src/core/observer/watcher.ts`路径下
    - 调用 watcher 中 update
-   - watcher 默认是异步更新，所以调用`queueWatcher(this)`
+   - watcher 不直接更新，而是异步更新，所以调用`queueWatcher(this)`
 
    ```js
    update () {
@@ -250,10 +339,10 @@ export default {
    }
    ```
 
-4. queueWatcher
+4. queueWatcher --> flushSchedulerQueue
 
-   - queueWatcher 内调用 nextTick(`flushSchedulerQueue`)
-   - flushSchedulerQueue 函数负责`更新视图`
+   - `src/core/observer/sheduler.ts`路径下
+   - queueWatcher 内调用 `nextTick(flushSchedulerQueue)`
 
    ```js
     /*将一个观察者对象push进观察者队列，在队列中已经存在相同的id则该观察者对象将被跳过，除非它是在队列被刷新时推送*/
@@ -278,7 +367,92 @@ export default {
    }
    ```
 
-5. nextTick
+5. flushSchedulerQueue 整体逻辑 
+
+   - `src/core/observer/sheduler.ts`路径下
+
+   - for循环内：
+     1. 调用 beforeupdate
+     2. 调用 watcher.run()更新视图
+   - for循环结束后：
+     1. 重置状态 通过 resetSchedulerState()
+     2. 调用 updated(通过 callUpdatedHooks )
+
+   - 所以 `beforeupdate 和 updated 都是微任务`
+
+   
+
+    注意：
+
+      - beforeupdate 和 watcher.run()都是在for循环内部，callUpdatedHooks在for循环外部；
+      - 所以是在所有 watcher 都更新完之后再调用的 updated
+
+   ```js
+   function flushSchedulerQueue() {
+     currentFlushTimestamp = getNow()
+     flushing = true
+     let watcher, id
+   
+     // Sort queue before flush.
+     // This ensures that:
+     // 1. Components are updated from parent to child. (because parent is always
+     //    created before the child)
+     // 2. A component's user watchers are run before its render watcher (because
+     //    user watchers are created before the render watcher)
+     // 3. If a component is destroyed during a parent component's watcher run,
+     //    its watchers can be skipped.
+     queue.sort((a, b) => a.id - b.id)
+   
+     // do not cache length because more watchers might be pushed
+     // as we run existing watchers
+     for (index = 0; index < queue.length; index++) {
+       watcher = queue[index]
+       // 1. 调用watcher的beforeupdate
+       if (watcher.before) {
+         watcher.before()
+       }
+   
+       // 2. 执行 watcher.run() 更新视图
+       id = watcher.id
+       has[id] = null
+       watcher.run()
+       // in dev build, check and stop circular updates.
+       if (__DEV__ && has[id] != null) {
+         circular[id] = (circular[id] || 0) + 1
+         if (circular[id] > MAX_UPDATE_COUNT) {
+           warn(
+             'You may have an infinite update loop ' +
+               (watcher.user
+                 ? `in watcher with expression "${watcher.expression}"`
+                 : `in a component render function.`),
+             watcher.vm
+           )
+           break
+         }
+       }
+     }
+   
+     // keep copies of post queues before resetting state
+     const activatedQueue = activatedChildren.slice()
+     const updatedQueue = queue.slice()
+   
+     // 3. 还原状态【为了下一次loop】
+     resetSchedulerState()
+   
+     // call component updated and activated hooks
+     // 4. 在所有 watcher 都更新完之后再调用的 updated
+     callActivatedHooks(activatedQueue)
+     callUpdatedHooks(updatedQueue)
+   
+     // devtool hook
+     /* istanbul ignore if */
+     if (devtools && config.devtools) {
+       devtools.emit('flush')
+     }
+   }
+   ```
+
+   
 
 6. 所以 nextTick 的 callbacks 里函数为
 
@@ -290,11 +464,17 @@ export default {
 
    ![image-20220620103917039](D:\Sync\typora图片\image-20220620103917039.png)
 
-## Vue 异步更新策略
+## 进阶的问题
 
-## 参考文章
+### 为什么 nextTick 能够获取到更新后的 DOM？
 
-### [2017 年-Vue 源码详解之 nextTick](https://segmentfault.com/a/1190000008589736)
+### 为什么 nextTick 在 updated 之后？
+
+## 参考文章中的变动
+
+时间太久，有些当时的文章现在已经部分过时
+
+### [2017 年-Vue 源码详解之 nextTick](https://segmentfault.com/a/1190000008589736) - 改动
 
 #### 一些变动
 
@@ -402,18 +582,27 @@ _上述 Reacting to DOM manipulation 并不是说你执行 DOM 操作时就会�
 更新：找到一张图，不过着重说明的是整个 event loop，没有细说 UI render。
 ![image-20220612164018311](D:\Sync\typora图片\image-20220612164018311.png)
 
-### [Update、nextTick 、refs ，虚拟 DOM 与真实 DOM 的联系](https://its201.com/article/weixin_51116314/119814816)
+## 参考
 
-#### 错误
+1. [JS 宏任务，微任务，DOM 渲染，requestAnimationFrame 执行顺序比较](https://juejin.cn/post/7084989596034924581)
 
-里边 refs 写错了
+2. [深入解析你不知道的 EventLoop 和浏览器渲染、帧动画、空闲回调（动图演示）](https://juejin.cn/post/6844904165462769678)
 
-1. ref 在 dom 元素上是真实 dom，文中写的虚拟 dom
-2. ref 在 vue 组件上是 vue 组件实例
+3. 2017 年-[Vue 源码详解之 nextTick：MutationObserver 只是浮云，microtask 才是核心！](https://segmentfault.com/a/1190000008589736)
 
-### [2022 年-nextTick 实现原理](https://juejin.cn/post/7087866362785169416)
+   - `源代码的变动`
+   - flushBatcherQueue --> flushSheldurQueue
+   - MutationObserver(flushCallbacks) --> Promise.resolve().then(flushCallbacks)
 
-作者：大古 Zio
-链接：https://juejin.cn/post/7087866362785169416
-来源：稀土掘金
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+4. `写的很好`[vue 异步更新 dom 原理](https://zhuanlan.zhihu.com/p/364479245)
+
+   - 提到了 nextTick 与 update；
+   - 提到了修改 data 中数据发生了什么；
+   - 但没具体介绍 watcher 的 run 函数执行；
+   - 也没说明为啥为啥 DOM 更新后调用 updated
+
+5. [Update、nextTick 、refs ，虚拟 DOM 与真实 DOM 的联系](https://its201.com/article/weixin_51116314/119814816)
+
+   - 里边 refs `写错了`
+   - ref 在 dom 元素上是真实 dom，文中写的虚拟 dom
+   - ref 在 vue 组件上是 vue 组件实例
