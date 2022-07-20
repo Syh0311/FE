@@ -8,7 +8,7 @@ function multiply(e, f) {
 }
 c = multiply(20, 30);
 
-//全局执行上下文
+//全局执行上下文——————————————————————
 GlobalExectionContext = {
   ThisBinding: "<Global Object>",
 
@@ -20,7 +20,7 @@ GlobalExectionContext = {
       b: "< uninitialized >",
       multiply: "< func >",
     },
-    outer: "<null>",
+    outer: "<null>", // 代表作用域链
   },
 
   VariableEnvironment: {
@@ -29,7 +29,7 @@ GlobalExectionContext = {
       // 在这里绑定标识符
       c: undefined,
     },
-    outer: "<null>",
+    outer: "<null>", // 代表作用域链
   },
 };
 
@@ -43,7 +43,7 @@ FunctionExectionContext = {
       // 在这里绑定标识符
       Arguments: { 0: 20, 1: 30, length: 2 },
     },
-    outer: "<GlobalLexicalEnvironment>",
+    outer: "<GlobalLexicalEnvironment>", // 代表作用域链
   },
 
   VariableEnvironment: {
@@ -52,6 +52,6 @@ FunctionExectionContext = {
       // 在这里绑定标识符
       g: undefined,
     },
-    outer: "<GlobalLexicalEnvironment>",
+    outer: "<GlobalLexicalEnvironment>", // 代表作用域链
   },
 };
