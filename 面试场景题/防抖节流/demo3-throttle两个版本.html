@@ -1,0 +1,48 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #box {
+        width: 200px;
+        height: 200px;
+        background-color: deeppink;
+      }
+      #box2 {
+        margin-top: 30px;
+        width: 200px;
+        height: 200px;
+        background-color: tomato;
+      }
+    </style>
+  </head>
+  <body>
+    <h4>立即执行版与普通版的两个区别：</h4>
+    <h5>1. 立即执行版立马执行一次fn；</h5>
+    <h5>2. 停止后【比如不再拖动】，立即执行版马上停了，正常的还得再执行几次【就算已经不拖动了】【因为立即执行版的定时器里不执行函数，值给timer赋值】</h5>
+    <h3>正常throttle【跳过第一次】</h3>
+    <div id="box" draggable="true"></div>
+
+    <h3>立即执行throttle</h3>
+    <div id="box2" draggable="true"></div>
+
+    <script type="module">
+      import { throttle, throttleRightnow } from "./02-throttle.mjs";
+
+      const box = document.querySelector("#box");
+      const box2 = document.querySelector("#box2");
+
+      // 接收参数，所以都得 fn.apply(this,arguments)
+      function onDrag(e) {
+        console.log(e);
+      }
+
+      const boxThrottle = throttle(onDrag, 1000);
+      const boxThrottle2 = throttleRightnow(onDrag, 1000);
+      box.addEventListener("drag", boxThrottle);
+      box2.addEventListener("drag", boxThrottle2);
+    </script>
+  </body>
+</html>

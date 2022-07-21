@@ -1,0 +1,33 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h2>debounce case1------</h2>
+    <h4>debounce的两个版本</h4>
+    正常debounce：<input type="text" id="ipt" />
+    <br />
+    <br />
+    立即执行debounce：<input type="text" id="ipt2" />
+
+    <script type="module">
+      import { debounce, debounceRightnow } from "./01-debounce.mjs";
+      const ipt = document.querySelector("#ipt");
+      const ipt2 = document.querySelector("#ipt2");
+
+      // 接收参数，所以都得 fn.apply(this,arguments)
+      function onInput(e) {
+        // console.log("input输入内容的最后一位" + e.data);
+        console.log(e.target.value);
+      }
+
+      const iptDebounce = debounce(onInput, 500);
+      const iptDebounce2 = debounceRightnow(onInput, 500);
+      ipt.addEventListener("input", iptDebounce);
+      ipt2.addEventListener("input", iptDebounce2);
+    </script>
+  </body>
+</html>

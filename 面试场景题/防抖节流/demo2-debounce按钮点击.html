@@ -1,0 +1,36 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h2>debounce case2 ------</h2>
+    <h4>点击过程中显示“点击中！！”，一秒没点则再变回“点我！”</h4>
+    <button id="btn">点我！</button>
+    <br />
+
+    <script type="module">
+      import { debounce, debounceRightnow } from "./01-debounce.mjs";
+      const btn = document.querySelector("#btn");
+
+      function onClick() {
+        btn.textContent = "点击中！！";
+      }
+      function cancle() {
+        btn.textContent = "点我！";
+      }
+
+      const btnDebounce = debounce(cancle, 1000);
+
+      // 正常是直接把 btnDebounce 作为回调，但此处在 btnDebounce外再包裹一层，处理其他想要的逻辑
+      const finnalBtnClick = (e) => {
+        btnDebounce();
+        onClick();
+      };
+
+      btn.addEventListener("click", finnalBtnClick);
+    </script>
+  </body>
+</html>
