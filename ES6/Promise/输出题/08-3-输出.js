@@ -1,5 +1,5 @@
-//!!!！！！
-//知识点：promise状态改变了回触发then，将其加到微任务队列；
+// ！！
+//知识点：promise状态改变了 才会触发then，然后将其加到微任务队列；
 const promise = new Promise((resolve, reject) => {
   console.log(1);
   setTimeout(() => {

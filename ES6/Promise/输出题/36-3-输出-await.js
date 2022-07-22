@@ -1,3 +1,4 @@
+// await不能接受【失败状态】的promise，会抛出错误【Uncaught (in promise) error】
 async function async1() {
   await async2();
   console.log("async1");

@@ -1,3 +1,5 @@
+// start 在 async2 之后打印 ！！
+
 async function async1() {
   console.log("async1 start");
   await async2();

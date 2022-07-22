@@ -1,4 +1,4 @@
-// 改变状态之后的代码正常执行 ！！！!!!
+// 改变状态之后的代码正常执行 ！！
 const promise = new Promise((resolve, reject) => {
   setTimeout(() => {
     resolve("success1");

@@ -1,4 +1,4 @@
-// !!!！！！
+// ！！
 // Promise.all不熟悉
 
 function runAsync(x) {
@@ -18,4 +18,4 @@ Promise.all([runAsync(1), runReject(4), runAsync(3), runReject(2)])
 // 3
 // 2
 // Error: 2
-// 4      【四依然会执行，但是promise.all已经不执行了】
+// 4      【数组中的异步依然会执行，但是promise.all已经不执行了】

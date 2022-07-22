@@ -1,5 +1,5 @@
-//!!!！！！
-//catch 和 then 【值穿透】 都会进微任务队列，但是不执行
+// ！！
+//catch 和 then 【值穿透】 都会进微任务队列
 
 Promise.resolve(1)
   .then(() => console.log(1))

@@ -1,6 +1,8 @@
-// !!!！！！
-// Promise.race不熟悉
-
+/**
+！！
+Promise.race()
+只要数组中第一个发生【状态改变】的，无论成功还是失败
+*/
 function runAsync(x) {
   const p = new Promise((r) => setTimeout(() => r(x, console.log(x)), 1000));
   return p;

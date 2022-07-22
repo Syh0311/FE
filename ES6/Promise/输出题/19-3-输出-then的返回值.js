@@ -1,4 +1,4 @@
-// !!!！！！
+// ！！
 //.then 或 .catch 返回的值不能是 promise 本身-----会造成死循环
 
 const promise = Promise.resolve().then(() => {

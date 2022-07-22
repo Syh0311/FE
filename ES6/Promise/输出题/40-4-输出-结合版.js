@@ -9,8 +9,9 @@ const p1 = new Promise((resolve) => {
   .then((res) => {
     console.log(res);
     setTimeout(() => {
-      console.log(p1);
+      console.log(p1); //【处理then之后】的最终状态
     }, 1000);
+    return "syh";
   })
   .finally((res) => {
     console.log("finally", res);

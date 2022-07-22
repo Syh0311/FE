@@ -1,4 +1,4 @@
-// ！！！!!!   【promise的then中的【throw，相当于reject】--通过【添加catch-12题】】
+// ！!   【promise的then中的【throw，相当于reject】--通过【添加catch-12题】】
 const promise1 = new Promise((resolve, reject) => {
   setTimeout(() => {
     resolve("success");

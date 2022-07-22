@@ -1,5 +1,10 @@
-//!!!！！！
-// await 结合 try 的执行顺序
+/**
+  await 结合 try 的执行顺序！！
+  【script start】 在 【error---】之前打印
+  可理解为：
+    1. await中同步代码仍然同步执行，异步代码才加到相应队列
+    2. await之后代码加到微任务队列
+*/
 
 async function async1() {
   try {

@@ -1,6 +1,9 @@
-// !!!！！！
-// Promise.any()
-//全部reject时，触发catch，只要有一个成功 就触发then
+/**
+  ！！
+  Promise.any()
+  只要有一个成功，就触发resolve
+  全部失败才触发 reject
+*/
 
 function runAsync(x) {
   const p = new Promise((r) => setTimeout(() => r(x, console.log(x)), 1000));

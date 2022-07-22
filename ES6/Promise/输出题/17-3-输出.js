@@ -1,4 +1,4 @@
-//!!!！！！
+// ！！
 // Promise 的 .then 或者 .catch 可以被调用多次【一个promise，好几个then，状态改变后，这几个then都会执行】
 
 const promise = new Promise((resolve, reject) => {
