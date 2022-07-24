@@ -1,0 +1,47 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="btn">点我！</button>
+    <script src="./04-定时器合并.js"></script>
+    <script>
+      // 前置准备 ——————————————————————————
+      const btn = document.querySelector("#btn");
+
+      function sleep(timer = 20) {
+        let start = Date.now();
+        while (Date.now() - start < timer) {}
+      }
+
+      function rAF() {
+        // sleep(5);
+        console.log("rAF");
+      }
+      function microTask() {
+        // sleep(5);
+        console.log("microTask");
+      }
+      function microTask() {
+        console.log("microTask");
+        requestAnimationFrame(rAF);
+      }
+      //  ——————————————————————————————————
+
+      // 点击虽然修改了DOM，但到当前帧结束了才会真正开始【修改视图】
+      btn.addEventListener("click", () => {
+        // 此处修改了DOM元素，但是js从上往下一次执行，不会立即取更新视图，到对应时间【1000/FPS】后，执行GUI线程，挂起js线程，此时两个定时器都已经执行完成【定时器大概4ms执行完，电脑165FPS，一个Frame大概6.1ms，在UI Render之前，即执行GUI线程之前，看rAF队列里，如果不为空，按照添加顺序执行】
+        btn.textContent = "---------------------------------------------------------------";
+        setTimeout(microTask);
+        setTimeout(microTask);
+        // setTimeout(microTask,20);// 时间大点就分开了
+
+        queueMicrotask(microTask);
+        queueMicrotask(microTask);
+      });
+    </script>
+  </body>
+</html>

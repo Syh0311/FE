@@ -3,7 +3,7 @@ function mySetInterval(cb, delay = 0) {
   let startTime = Date.now();
   const timer = { id: undefined };
 
-  // 2. 使用RAF开启loop
+  // 2. 使用rAF开启loop
   function loop() {
     const cur = Date.now();
     if (cur - startTime >= delay) {

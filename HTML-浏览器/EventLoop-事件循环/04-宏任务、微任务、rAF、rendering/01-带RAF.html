@@ -1,0 +1,40 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /*
+      打印顺序 microTask rAF T1 T2  原因如下：
+      一个Frame里可以有多次事件循环
+
+      本样例中，
+        - 宏任务的同步代码从上到下依次执行，执行结果为：
+          1. 将T1,T2添加到【宏任务队列】；
+          2. 将rAF添加到【处理rAF的队列】；
+          3. 将microTask添加到【微任务队列】
+        同步代码【当前宏任务】执行完毕，开启下一个宏任务；
+        - 开启下一个宏任务前做两件事：
+          1. 轮训微任务队列；
+            - 此处执行了microTask；
+          2. 判断是否需要 UI渲染；
+            - 由【UI渲染是否执行】，此处rAF队列不为空，遍历执行之(rAF回调)
+
+        所以打印结果为 microTask rAF T1 T2
+
+      */
+      const T1 = () => console.log("执行了T1回调函数---");
+      const rAF = () => console.log("执行了rAF回调函数---");
+      const T2 = () => console.log("执行了T2回调函数---");
+      const microTask = () => console.log("执行了microTask回调函数---");
+
+      setTimeout(T1);
+      requestAnimationFrame(rAF);
+      setTimeout(T2);
+      queueMicrotask(microTask);
+    </script>
+  </body>
+</html>

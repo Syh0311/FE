@@ -1,0 +1,79 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .outer {
+        width: 400px;
+        height: 400px;
+        background-color: aliceblue;
+      }
+      .inner {
+        width: 200px;
+        height: 200px;
+        background-color: rgb(94, 168, 233);
+      }
+    </style>
+  </head>
+  <body>
+    <a href="https://segmentfault.com/a/1190000040014996">搞懂JS的事件循环（Event Loop）和宏任务/微任务</a>
+    <div class="outer">
+      <div class="inner"></div>
+    </div>
+
+    <script>
+      // 前置准备 —————————————————————————
+      const outer = document.querySelector(".outer");
+      const inner = document.querySelector(".inner");
+
+      function onClick1(box) {
+        return function () {
+          console.log(box + "click1");
+
+          setTimeout(() => {
+            console.log(box + "T1");
+            setTimeout(() => console.log(box + "T111"));
+          });
+          Promise.resolve().then(() => console.log(box + "Microtask1"));
+        };
+      }
+      function onClick2(box) {
+        return function () {
+          console.log(box + "click2");
+
+          setTimeout(() => console.log(box + "T2"));
+          Promise.resolve().then(() => console.log(box + "Microtask2"));
+        };
+      }
+
+      inner.addEventListener("click", onClick1("innerBox---"));
+      outer.addEventListener("click", onClick1("outerBox---"));
+
+      inner.addEventListener("click", onClick2("innerBox---"));
+      outer.addEventListener("click", onClick2("outerBox---"));
+      // ———————————————————————————————————
+
+      inner.click();
+
+      /**
+      现象：
+        case1：js模拟点击按钮
+          - 结果：太长看控制面板
+        case2：手动点击按钮
+          - 结果：太长看控制面板
+      总结：
+        case1：js模拟点击按钮
+          - 相当于在一个 事件循环内 【遍历执行】两个回调函数；
+          - 此时宏任务队列只有一个由四个函数依次执行的宏任务：【(innerCb1,innerCb2,outerCb1,outerCb2)】
+        case2：手动点击按钮
+          - click是宏任务，点击按钮后，事件触发线程【按订阅顺序依次】将当前DOM节点订阅的回调函数 添加到【宏任务队列】    https://juejin.cn/post/6844903998747574286
+          - 事件触发线程内【调度中心】内有【各DOM节点】订阅的【回调队列】，点击DOM节点后，将队列中的回调遍历推入到js线程的宏任务队列
+
+          - 点击后，宏任务队列中有四个宏任务【innerCb1,innerCb2,outerCb1,outerCb2】
+          - 之后按照正常的事件循环流程处理
+      */
+    </script>
+  </body>
+</html>

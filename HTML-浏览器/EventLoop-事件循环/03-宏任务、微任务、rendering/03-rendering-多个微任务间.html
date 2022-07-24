@@ -1,0 +1,63 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- <span>[多个微任务之间，会进行DOM的渲染吗？](https://juejin.cn/post/7041464287004459044)</span> -->
+    <a href="https://juejin.cn/post/7041464287004459044">多个微任务之间，会进行DOM的渲染吗？</a>
+    <h4>为啥performance里的 Style-Layout-Paint-Composite还是在整个的microtask后边，但是debug时候DOM的确出来了？？</h4>
+    <h4>UI Render不是宏任务吗，为啥能穿插到微任务中间？？</h4>
+    <h4>nextTick同理</h4></h4></h4>
+
+    <ul id="text"></ul>
+    <button id="btn">点击开始测试</button>
+
+    <script>
+      const divs = document.getElementById("text");
+      const btn = document.querySelector("#btn");
+
+      btn.addEventListener("click", onClick);
+
+      function onClick() {
+        // 1. 带名字的函数，方便 performance
+        const macroTask = () => {
+          debugger;
+          console.log(divs.outerHTML, "setTimeout");
+          var big = document.createElement("li");
+          big.innerHTML = "我是setTimeout插入的内容";
+          divs.appendChild(big);
+        };
+        // 重排
+        const microTask1 = () => {
+          debugger;
+          console.log(divs.outerHTML, "微任务1");
+          const li = document.createElement("li");
+          li.innerHTML = "我是微任务1插入的内容";
+          divs.appendChild(li);
+        };
+        // 重绘
+        const microTask2 = () => {
+          debugger;
+          console.log(divs.outerHTML, "微任务2");
+          divs.setAttribute("style", "color:red");
+        };
+        const microTask3 = () => {
+          debugger;
+          console.log(divs.outerHTML, "微任务3");
+          const li = document.createElement("li");
+          li.innerHTML = "我是微任务3插入的内容";
+          divs.appendChild(li);
+        };
+
+        // 2. 开始调用
+        setTimeout(macroTask);
+        queueMicrotask(microTask1);
+        queueMicrotask(microTask2);
+        queueMicrotask(microTask3);
+      }
+    </script>
+  </body>
+</html>

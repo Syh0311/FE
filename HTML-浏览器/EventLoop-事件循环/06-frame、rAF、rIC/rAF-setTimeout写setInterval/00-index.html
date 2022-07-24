@@ -6,8 +6,8 @@
     <title>Document</title>
   </head>
   <body>
-    <script src="./01-RAF版interval-双函数.js"></script>
-    <script src="./02-RAF版interval-class.js"></script>
+    <script src="./01-rAF版interval-双函数.js"></script>
+    <script src="./02-rAF版interval-class.js"></script>
     <script src="./03-setTimeout版interval.js"></script>
     <script>
       // 测试例子------------
@@ -26,12 +26,12 @@
       //   callback();
       // }, 100);
 
-      // case2 ---- RAF 两个函数版
+      // case2 ---- rAF 两个函数版
       const timerId = mySetInterval(callback, 1000);
       myClearInterval(timerId.value);
 
-      // case3 ---- RAF class版
-      const myInterval = new RAFInterval(callback, 100);
+      // case3 ---- rAF class版
+      const myInterval = new rAFInterval(callback, 100);
       console.log("[ myInterval ]", myInterval);
       window.xx = myInterval;
 

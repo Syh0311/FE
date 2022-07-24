@@ -1,0 +1,29 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="btn">点我！</button>
+    <script>
+      const btn = document.querySelector("#btn");
+
+      function sleep(delay) {
+        let startTime = Date.now();
+        while (Date.now() - startTime < delay) {}
+      }
+
+      function onClick() {
+        for (let i = 0; i < 100; i++) {
+          sleep(10);
+          btn.textContent = `${i}--${i}--${i}--${i}--${i}--${i}--${i}--${i}--${i}--${i}--${i}--${i}--${i}--${i}--${i}`;
+          // debugger;
+          alert(i);
+        }
+      }
+      btn.addEventListener("click", onClick);
+    </script>
+  </body>
+</html>

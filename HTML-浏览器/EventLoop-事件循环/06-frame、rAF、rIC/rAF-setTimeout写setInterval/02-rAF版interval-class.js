@@ -1,4 +1,4 @@
-class RAFInterval {
+class rAFInterval {
   // 私有属性与方法
   #cb;
   #delay;
@@ -13,7 +13,7 @@ class RAFInterval {
     this.#startTime = Date.now();
     this.#timerId = undefined;
 
-    // 2. RAF执行loop
+    // 2. rAF执行loop
     this.loop();
   }
 
@@ -27,7 +27,7 @@ class RAFInterval {
     this.#timerId = requestAnimationFrame(this.loop.bind(this));
   }
 
-  RAFClearInterval() {
+  rAFClearInterval() {
     cancelAnimationFrame(this.#timerId);
   }
 
