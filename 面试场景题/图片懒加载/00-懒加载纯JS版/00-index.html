@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>图片懒加载</title>
+  </head>
+  <body>
+    <a href="https://tuapi.eees.cc/" target="_blank" rel="noopener noreferrer">图片接口</a>
+    <br />
+    <br />
+    1. 图片外的div没被撑开；
+    <br />
+    <br />
+    2. img 样式改了后一下加载很多张图片
+    <div id="view">
+      <img data-src="https://tuapi.eees.cc/api.php?category=biying&type=302" class="lazy-image" />
+      <img data-src="https://tuapi.eees.cc/api.php?category=dongman&type=302" class="lazy-image" />
+      <img data-src="https://tuapi.eees.cc/api.php?category=fengjing&type=302" class="lazy-image" />
+
+      <img data-src="https://tuapi.eees.cc/api.php?category=biying&type=302" class="lazy-image" />
+      <img data-src="https://tuapi.eees.cc/api.php?category=dongman&type=302" class="lazy-image" />
+      <img data-src="https://tuapi.eees.cc/api.php?category=fengjing&type=302" class="lazy-image" />
+
+      <img data-src="https://tuapi.eees.cc/api.php?category=biying&type=302" class="lazy-image" />
+      <img data-src="https://tuapi.eees.cc/api.php?category=dongman&type=302" class="lazy-image" />
+      <img data-src="https://tuapi.eees.cc/api.php?category=fengjing&type=302" class="lazy-image" />
+    </div>
+  </body>
+
+  <!-- <script src="./01-lazyImage-普通版.js"></script> -->
+  <!-- <script src="./02-lazyImage-Intersection版.js"></script> -->
+  <script src="./03-lazyImage-结合版.js"></script>
+
+  <link href="./03-style.css" rel="stylesheet" />
+  <script>
+    console.log(document.documentElement.clientHeight);
+    new LazyImage(".lazy-image");
+  </script>
+</html>
