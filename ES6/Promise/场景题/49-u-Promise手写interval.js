@@ -15,7 +15,7 @@ class Interval {
     if (this.cancle) return new Promise(() => {});
     let p = Promise.resolve();
     p = p.then(() => this.timer()).then(() => this.startInterval());
-    // p = p.then(this.timer).then(this.startInterval); //写成传函数体形式，执行timer的地方就变了【timer中this不是实例了！！！!!!】
+    // p = p.then(this.timer).then(this.startInterval); //写成传函数体形式，执行timer的地方就变了【timer中this不是实例了！！】
     return p;
   }
   clearInterval() {

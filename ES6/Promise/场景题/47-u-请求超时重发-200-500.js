@@ -1,3 +1,4 @@
+// 题目描述：请求没收到回应，200ms后再次发送请求，还没收到回应，过500ms再次发送请求
 function ajax() {
   const delay = Math.random() * 1000;
   return new Promise((resolve, rejetc) => {
