@@ -17,7 +17,7 @@ syaSthOut被调用后，生成词法环境中的saySth存在
 
 */
 
-// let msg = "SYH IS HANDSOME";
+let msg = "SYH IS HANDSOME";
 function saySth() {
   console.log(msg);
 }
